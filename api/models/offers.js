@@ -1,0 +1,41 @@
+module.exports = function (sequelize, DataTypes) {
+  let Offer = sequelize.define(
+    "offers",
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      passengers: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      baggage: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      description: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
+      date: {
+        type: DataTypes.DATE,
+        defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
+        allowNull: false,
+      },
+      active: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+      },
+      cancellationReason: {
+        type: DataTypes.TEXT,
+      },
+    },
+    {
+      timestamps: false,
+    }
+  );
+
+  return Offer;
+};

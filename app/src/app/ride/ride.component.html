@@ -1,0 +1,182 @@
+<ng-container *ngIf="ride">
+  <div class="container my-3">
+    <div class="d-flex">
+      <a routerLink="/rides" class="navbar-toggler p-0 mr-3">
+        <span class="back-icon"></span>
+      </a>
+      <div>
+        <h3>{{ ride.routes[0].startSimple }} - {{ ride.routes[ride.routes.length - 1].endSimple }}</h3>
+        <h6 class="mb-0">{{ ride.routes[0].departure | date: "d. M. yyyy, H:mm" }}</h6>
+      </div>
+    </div>
+  </div>
+</ng-container>
+<div id="map" class="map-small" *ngIf="error.type != 'data'"></div>
+<ng-container *ngIf="ride">
+  <div class="container my-3">
+    <div class="alert alert-warning" *ngIf="ride.routes.length > 1">
+      <p class="mb-0">
+        Ta prevoz vključuje postanke na poti.
+      </p>
+    </div>
+    <div class="row align-items-center justify-content-between">
+      <div class="col-auto">
+        <p class="mb-1">
+          <img src="{{ ride.driver.image ? ride.driver.image : '/assets/images/user.png' }}" class="user-avatar rounded-circle mr-2" />
+          {{ ride.driver.firstName }} {{ ride.driver.lastName }}
+        </p>
+      </div>
+      <div class="col-auto">
+        <p class="mb-0">
+          <strong>{{ ride.price | currency: "EUR" }}</strong>
+        </p>
+      </div>
+    </div>
+    <div class="row pt-2 align-items-center justify-content-between">
+      <div class="col-12">
+        <p class="mb-0">{{ ride.vehicle.model }}</p>
+      </div>
+    </div>
+    <div class="row my-3 py-3 info-panel">
+      <div class="col-6">
+        <div class="text-center">
+          <p class="mb-1"><i class="fas fa-user"></i></p>
+          <small class="text-secondary">Prosta mesta</small>
+          <p class="mb-0">
+            <strong>{{ ride.passengersSpace }}</strong>
+          </p>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="text-center">
+          <p class="mb-1"><i class="fas fa-suitcase"></i></p>
+          <small class="text-secondary">Prostor za prtljago</small>
+          <p class="mb-0">
+            <strong>{{ ride.baggageSpace }}</strong>
+          </p>
+        </div>
+      </div>
+    </div>
+    <section class="pb-3">
+      <ng-container *ngFor="let route of ride.routes; first as isFirst">
+        <div class="row align-items-center">
+          <div class="col-auto">
+            <div [ngClass]="{ 'point-red': isFirst, point: !isFirst }"></div>
+          </div>
+          <div class="col pl-0">
+            {{ route.start }}
+          </div>
+        </div>
+        <div class="row align-items-center">
+          <div class="col-12">
+            <div class="route">
+              <div class="row">
+                <div class="col-6 pb-1">
+                  <small class="text-secondary">Odhod</small>
+                  <p class="mb-0">{{ route.departure | date: "d. M. yyyy, H:mm" }}</p>
+                </div>
+                <div class="col-6 pb-1">
+                  <small class="text-secondary">Skupni stroški prevoza</small>
+                  <p class="mb-0">{{ route.price | currency: "EUR" }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+      <div class="row align-items-center">
+        <div class="col-auto">
+          <div class="point-green"></div>
+        </div>
+        <div class="col pl-0">
+          {{ ride.routes[ride.routes.length - 1].end }}
+        </div>
+      </div>
+    </section>
+    <div class="form-group">
+      <p>{{ ride.description }}</p>
+    </div>
+    <section>
+      <h5>Povzetek rezervacije</h5>
+      <div class="row pb-2 align-items-center justify-content-between">
+        <div class="col-12">
+          <small class="text-secondary">Voznik</small>
+          <div>
+            <img src="{{ ride.driver.image ? ride.driver.image : '/assets/images/user.png' }}" class="user-avatar rounded-circle mr-2" />
+            {{ ride.driver.firstName }} {{ ride.driver.lastName }}
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">
+            <small class="text-secondary">Od</small>
+            <p>{{ ride.routes[0].start }}</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <small class="text-secondary">Do</small>
+            <p>{{ ride.routes[ride.routes.length - 1].end }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">
+            <small class="text-secondary">Odhod</small>
+            <p>{{ ride.routes[0].departure | date: "d. M. yyyy, H:mm" }}</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <small class="text-secondary">Vozilo</small>
+            <p>{{ ride.vehicle.model }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-6">
+          <div class="form-group">
+            <small class="text-secondary">Število oseb</small>
+            <p>{{ search.passengers }}</p>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="form-group">
+            <small class="text-secondary">Količina prtljage</small>
+            <p>{{ search.baggage }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="form-group" *ngIf="ride.description">
+        <small class="text-secondary">Opis</small>
+        <p>{{ ride.description }}</p>
+      </div>
+      <div class="form-group">
+        <small class="text-secondary">Skupni stroški prevoza</small>
+        <div class="row justify-content-between">
+          <div class="col-12">
+            <p>
+              <strong>{{ ride.price | currency: "EUR" }}</strong>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <div class="alert alert-{{ error.type }}" *ngIf="error.type && error.type != 'data' && error.type != 'disabled'">
+      <p class="m-0">{{ error.message }}</p>
+    </div>
+    <div class="text-right">
+      <button (click)="createReservation()" class="btn btn-primary" [disabled]="error.type === 'loading'">Rezerviraj</button>
+    </div>
+  </div>
+</ng-container>
+<div *ngIf="!ride && !error.type">
+  <div class="loader"></div>
+</div>
+<div class="text-center text-secondary py-3" *ngIf="error.type && error.type === 'data'">
+  <h1><i class="fas fa-car"></i></h1>
+  <p>{{ error.message }}</p>
+  <a routerLink="/rides">Nazaj na rezultate iskanja</a>
+</div>

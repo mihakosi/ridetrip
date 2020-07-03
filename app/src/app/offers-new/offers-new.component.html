@@ -1,0 +1,224 @@
+<div class="container my-3">
+  <div class="d-flex">
+    <a routerLink="/offers" class="navbar-toggler p-0 mr-3">
+      <span class="back-icon"></span>
+    </a>
+    <div>
+      <h3 class="mb-0">Dodaj prevoz</h3>
+    </div>
+  </div>
+</div>
+<ng-container *ngIf="vehicles">
+  <div class="container my-3">
+    <form (ngSubmit)="createOffer()" role="form">
+      <ng-container *ngIf="vehicles.length > 0">
+        <div class="form-group">
+          <label for="vehicle">Vozilo</label>
+          <div class="custom-control custom-radio" *ngFor="let vehicle of vehicles">
+            <input
+              type="radio"
+              id="vehicle_{{ vehicle.id }}"
+              name="vehicle"
+              class="custom-control-input"
+              value="{{ vehicle.id }}"
+              [(ngModel)]="offer.vehicle"
+            />
+            <label class="custom-control-label" for="vehicle_{{ vehicle.id }}">{{ vehicle.model }}</label>
+          </div>
+        </div>
+        <section class="pb-3">
+          <div class="row align-items-center">
+            <div class="col-auto">
+              <div class="point-red"></div>
+            </div>
+            <div class="col pl-0">
+              <label for="start_0">Od kod greš?</label>
+              <input
+                type="text"
+                class="form-control"
+                id="start_0"
+                [(ngModel)]="offer.stops[0].start"
+                name="start_0"
+                data-type="start"
+                data-index="0"
+                (focusout)="getSearch($event)"
+              />
+              <small *ngIf="startSearch[0].loading">Iskanje lokacije ...</small>
+              <small *ngIf="startSearch[0].message" class="text-danger">{{ startSearch[0].message }}</small>
+            </div>
+          </div>
+          <div class="row align-items-center">
+            <div class="col-12">
+              <div class="route">
+                <div class="pb-2">
+                  <div class="form-group">
+                    <label for="departure_0">Kdaj odrineš od tam?</label>
+                    <input
+                      type="text"
+                      class="form-control mb-2"
+                      id="departure_0"
+                      [(ngModel)]="offer.stops[0].departure"
+                      name="departure_0"
+                      placeholder="{{ date | date: 'yyyy-MM-dd HH:mm' }}"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label for="price_0">Kolikšni so skupni stroški prevoza na tem delu poti?</label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      class="form-control mb-2"
+                      id="price_0"
+                      [(ngModel)]="offer.stops[0].price"
+                      name="price_0"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="collapse show" id="addStop">
+            <div class="row align-items-center">
+              <div class="col-auto">
+                <div class="point-dotted"></div>
+              </div>
+              <div class="col pl-0">
+                <button
+                  type="button"
+                  class="btn btn-link p-0 collapse show"
+                  (click)="addStop()"
+                  onclick="$('#stopContainer').collapse('show'); $('#addStop').collapse('hide');"
+                >
+                  <i class="fas fa-plus mr-2"></i> Načrtuješ postanek?
+                </button>
+              </div>
+            </div>
+            <div class="route">
+              <div class="pb-2">
+                <small class="text-muted"
+                  >Postanek naj ne bo daljši od nekaj minut. Če nameravaš narediti daljši postanek, raje dodaj dva ločena prevoza.</small
+                >
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="stopContainer">
+            <ng-container *ngIf="offer.stops[1]">
+              <div class="row align-items-center">
+                <div class="col-auto">
+                  <div class="point"></div>
+                </div>
+                <div class="col pl-0">
+                  <label for="start_1">Kje načrtuješ postanek?</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="start_1"
+                    [(ngModel)]="offer.stops[1].start"
+                    name="start_1"
+                    data-type="start"
+                    data-index="1"
+                    (focusout)="getSearch($event)"
+                  />
+                  <small *ngIf="startSearch[1].loading">Iskanje lokacije ...</small>
+                  <small *ngIf="startSearch[1].message" class="text-danger">{{ startSearch[1].message }}</small>
+                </div>
+              </div>
+              <div class="row align-items-center">
+                <div class="col-12">
+                  <div class="route">
+                    <div class="pb-2">
+                      <div class="form-group">
+                        <label for="departure_1">Kdaj odrineš od tam?</label>
+                        <input
+                          type="text"
+                          class="form-control mb-2"
+                          id="departure_1"
+                          [(ngModel)]="offer.stops[1].departure"
+                          name="departure_1"
+                          placeholder="{{ date | date: 'yyyy-MM-dd HH:mm' }}"
+                        />
+                      </div>
+                      <div class="form-group">
+                        <label for="price_1">Kolikšni so skupni stroški prevoza na tem delu poti?</label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          class="form-control mb-2"
+                          id="price_1"
+                          [(ngModel)]="offer.stops[1].price"
+                          name="price_1"
+                        />
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      class="btn btn-link p-0 collapse show"
+                      (click)="removeStop()"
+                      onclick="$('#stopContainer').collapse('hide'); $('#addStop').collapse('show');"
+                    >
+                      <i class="fas fa-minus mr-2"></i> Ne načrtuješ postanka?
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+          <div class="row align-items-center">
+            <div class="col-auto">
+              <div class="point-green"></div>
+            </div>
+            <div class="col pl-0">
+              <label for="end">Kam greš?</label>
+              <input
+                type="text"
+                class="form-control"
+                id="end"
+                [(ngModel)]="offer.end"
+                name="end"
+                data-type="end"
+                (focusout)="getSearch($event)"
+              />
+              <small *ngIf="endSearch.loading">Iskanje lokacije ...</small>
+              <small *ngIf="endSearch.message" class="text-danger">{{ endSearch.message }}</small>
+            </div>
+          </div>
+        </section>
+        <div class="form-group">
+          <label for="passengers">Za koliko oseb imaš prostora?</label>
+          <input type="number" class="form-control" id="passengers" min="0" [(ngModel)]="offer.passengers" name="passengers" />
+        </div>
+        <div class="form-group">
+          <label for="baggage">Za koliko prtljage imaš prostora?</label>
+          <input type="number" class="form-control" id="baggage" min="0" [(ngModel)]="offer.baggage" name="baggage" />
+          <small class="form-text text-muted">Za en kos prtljage se upošteva okvirna velikost kovčka v ročni prtljagi na letalu.</small>
+        </div>
+        <div class="form-group">
+          <label for="description">Želiš potnikom sporočiti še kaj?</label>
+          <textarea class="form-control" id="description" [(ngModel)]="offer.description" name="description"></textarea>
+        </div>
+        <p>Prosimo, da pred objavo prevoza preveriš, ali so vsi podatki ustrezni. Urejanje prevoza po objavi ne bo več možno.</p>
+        <div class="alert alert-{{ error.type }}" *ngIf="error.type && error.type != 'data' && error.type != 'loading'">
+          <p class="m-0">{{ error.message }}</p>
+        </div>
+        <div class="text-right">
+          <button type="submit" class="btn btn-primary" [disabled]="error.type === 'loading'">Dodaj</button>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="vehicles.length == 0">
+        <div class="text-center text-secondary py-3">
+          <h1><i class="fas fa-car"></i></h1>
+          <p>Preden lahko ponudiš prevoz, moraš dodati vozilo.</p>
+          <a routerLink="/vehicles-new">Dodaj vozilo</a>
+        </div>
+      </ng-container>
+    </form>
+  </div>
+</ng-container>
+<div *ngIf="!vehicles && !error.type">
+  <div class="loader"></div>
+</div>
+<div class="text-center text-secondary py-3" *ngIf="error.type && error.type === 'data'">
+  <h1><i class="fas fa-car"></i></h1>
+  <p>{{ error.message }}</p>
+  <a routerLink="/offers">Nazaj na ponujene prevoze</a>
+</div>

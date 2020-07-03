@@ -1,0 +1,109 @@
+<ng-container *ngIf="reservation">
+  <div class="container my-3">
+    <div class="d-flex">
+      <a routerLink="/reservations" class="navbar-toggler p-0 mr-3">
+        <span class="back-icon"></span>
+      </a>
+      <div>
+        <h3>{{ reservation.routes[0].startSimple }} - {{ reservation.routes[reservation.routes.length - 1].endSimple }}</h3>
+        <h6 class="mb-0">{{ reservation.routes[0].departure | date: "d. M. yyyy, H:mm" }}</h6>
+      </div>
+    </div>
+  </div>
+</ng-container>
+<div id="map" class="map-small" *ngIf="error.type != 'data'"></div>
+<ng-container *ngIf="reservation">
+  <div class="container my-3">
+    <div class="row align-items-center justify-content-between">
+      <div class="col-auto">
+        <div class="mb-1">
+          <img
+            src="{{ reservation.routes[0].offer.driver.image ? reservation.routes[0].offer.driver.image : '/assets/images/user.png' }}"
+            class="user-avatar rounded-circle mr-2"
+          />
+          {{ reservation.routes[0].offer.driver.firstName }} {{ reservation.routes[0].offer.driver.lastName }}
+        </div>
+      </div>
+      <div class="col-auto">
+        <p class="mb-0">
+          <strong>{{ reservation.price | currency: "EUR" }}</strong>
+        </p>
+      </div>
+    </div>
+    <div class="row py-2 align-items-center justify-content-between">
+      <div class="col-auto">
+        <p class="mb-0">{{ reservation.routes[0].offer.vehicle.model }}</p>
+      </div>
+      <div class="col-auto">
+        <p class="mb-0 badge badge-light registration-plate ml-2">{{ reservation.routes[0].offer.vehicle.licencePlate }}</p>
+      </div>
+    </div>
+    <div class="row my-3 py-3 info-panel">
+      <div class="col-6">
+        <div class="text-center">
+          <p class="mb-1"><i class="fas fa-user"></i></p>
+          <small class="text-secondary">Število potnikov</small>
+          <p class="mb-0">
+            <strong>{{ reservation.passengers }}</strong>
+          </p>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="text-center">
+          <p class="mb-1"><i class="fas fa-suitcase"></i></p>
+          <small class="text-secondary">Količina prtljage</small>
+          <p class="mb-0">
+            <strong>{{ reservation.baggage }}</strong>
+          </p>
+        </div>
+      </div>
+    </div>
+    <section class="pb-3">
+      <ng-container *ngFor="let route of reservation.routes; first as isFirst">
+        <div class="row align-items-center">
+          <div class="col-auto">
+            <div [ngClass]="{ 'point-red': isFirst, point: !isFirst }"></div>
+          </div>
+          <div class="col pl-0">
+            {{ route.start }}
+          </div>
+        </div>
+        <div class="row align-items-center">
+          <div class="col-12">
+            <div class="route">
+              <div class="row">
+                <div class="col-6 pb-1">
+                  <small class="text-secondary">Odhod</small>
+                  <p class="mb-0">{{ route.departure | date: "d. M. yyyy, H:mm" }}</p>
+                </div>
+                <div class="col-6 pb-1">
+                  <small class="text-secondary">Skupni stroški prevoza</small>
+                  <p class="mb-0">{{ route.price | currency: "EUR" }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+      <div class="row align-items-center">
+        <div class="col-auto">
+          <div class="point-green"></div>
+        </div>
+        <div class="col pl-0">
+          {{ reservation.routes[reservation.routes.length - 1].end }}
+        </div>
+      </div>
+    </section>
+    <div class="form-group">
+      <p>{{ reservation.routes[0].offer.description }}</p>
+    </div>
+  </div>
+</ng-container>
+<div *ngIf="!reservation && !error.type">
+  <div class="loader"></div>
+</div>
+<div class="text-center text-secondary py-3" *ngIf="error.type">
+  <h1><i class="fas fa-car"></i></h1>
+  <p>{{ error.message }}</p>
+  <a routerLink="/reservations">Nazaj na rezervacije</a>
+</div>
