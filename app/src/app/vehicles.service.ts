@@ -73,6 +73,21 @@ export class VehiclesService {
       .catch(this.handleError);
   }
 
+  public deleteVehicle(vehicle: any): Promise<any> {
+    const url: string = `${this.apiUrl}/vehicles/${vehicle.id}`;
+    const httpHeaders = {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${this.storage.getItem("token")}`,
+      }),
+    };
+
+    return this.http
+      .delete(url, httpHeaders)
+      .toPromise()
+      .then((result) => result as any)
+      .catch(this.handleError);
+  }
+
   private handleError(error: any): Promise<any> {
     return Promise.reject(error.error.message || "Podatkov ni mogoče pridobiti.");
   }
