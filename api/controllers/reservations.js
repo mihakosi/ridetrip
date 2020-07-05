@@ -8,7 +8,6 @@ const getReservations = (req, res) => {
 
   let operation = Sequelize.Op.gte;
   let order = "ASC";
-  console.log(req.query.past);
   if (req.query.past != null && req.query.past === "true") {
     operation = Sequelize.Op.lt;
     order = "DESC";
@@ -82,6 +81,9 @@ const getReservations = (req, res) => {
 
 // Get a reservation with the given ID
 const getReservation = (req, res) => {
+  let licencePlateStart = new Date().setHours(new Date().getHours() - 8);
+  let licencePlateEnd = new Date().setHours(new Date().getHours() + 8);
+
   Reservation.findOne({
     attributes: ["id", "passengers", "baggage", "date"],
     include: [
@@ -115,7 +117,19 @@ const getReservation = (req, res) => {
               {
                 model: Vehicle,
                 as: "vehicle",
-                attributes: ["model", "licencePlate"],
+                attributes: [
+                  "model",
+                  [
+                    sequelize.literal(
+                      `CASE WHEN "routes"."departure" >= to_timestamp(${
+                        licencePlateStart / 1000
+                      }) AND "routes"."departure" <= to_timestamp(${
+                        licencePlateEnd / 1000
+                      }) THEN "routes->offer->vehicle"."licencePlate" END`
+                    ),
+                    "licencePlate",
+                  ],
+                ],
               },
               {
                 model: User,
@@ -158,6 +172,7 @@ const getReservation = (req, res) => {
       }
     })
     .catch((error) => {
+      console.log(error);
       return res.status(500).json({
         message: "Nekaj je šlo narobe. Prosimo, poskusi znova.",
       });
