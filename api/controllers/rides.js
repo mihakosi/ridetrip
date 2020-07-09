@@ -45,10 +45,17 @@ const getRides = (req, res) => {
             "price",
             "departure",
             [
-              sequelize.literal(`CAST("offers"."passengers" - COALESCE(SUM("routes->reservations"."passengers"), 0) AS integer)`),
+              sequelize.literal(
+                `CAST("offers"."passengers" - COALESCE(SUM(CASE WHEN "routes->reservations"."active" = TRUE THEN "routes->reservations"."passengers" END), 0) AS integer)`
+              ),
               "passengersSpace",
             ],
-            [sequelize.literal(`CAST("offers"."baggage" - COALESCE(SUM("routes->reservations"."baggage"), 0) AS integer)`), "baggageSpace"],
+            [
+              sequelize.literal(
+                `CAST("offers"."baggage" - COALESCE(SUM(CASE WHEN "routes->reservations"."active" = TRUE THEN "routes->reservations"."baggage" END), 0) AS integer)`
+              ),
+              "baggageSpace",
+            ],
             [
               sequelize.literal(
                 `point(${req.query.startLongitude}, ${req.query.startLatitude}) <@> point("routes"."startLongitude", "routes"."startLatitude")::point`
@@ -200,10 +207,17 @@ const getRide = (req, res) => {
             "price",
             "departure",
             [
-              sequelize.literal(`CAST("offers"."passengers" - COALESCE(SUM("routes->reservations"."passengers"), 0) AS integer)`),
+              sequelize.literal(
+                `CAST("offers"."passengers" - COALESCE(SUM(CASE WHEN "routes->reservations"."active" = TRUE THEN "routes->reservations"."passengers" END), 0) AS integer)`
+              ),
               "passengersSpace",
             ],
-            [sequelize.literal(`CAST("offers"."baggage" - COALESCE(SUM("routes->reservations"."baggage"), 0) AS integer)`), "baggageSpace"],
+            [
+              sequelize.literal(
+                `CAST("offers"."baggage" - COALESCE(SUM(CASE WHEN "routes->reservations"."active" = TRUE THEN "routes->reservations"."baggage" END), 0) AS integer)`
+              ),
+              "baggageSpace",
+            ],
             [
               sequelize.literal(
                 `point(${req.query.startLongitude}, ${req.query.startLatitude}) <@> point("routes"."startLongitude", "routes"."startLatitude")::point`

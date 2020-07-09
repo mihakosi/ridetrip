@@ -26,6 +26,7 @@ router.get("/rides/:id", authentication, ridesController.getRide);
 router.get("/reservations", authentication, reservationsController.getReservations);
 router.get("/reservations/:id", authentication, reservationsController.getReservation);
 router.post("/reservations", authentication, reservationsController.createReservation);
+router.put("/reservations/:id/cancel", authentication, reservationsController.cancelReservation);
 
 /* Vehicles */
 router.get("/vehicles", authentication, vehiclesController.getVehicles);

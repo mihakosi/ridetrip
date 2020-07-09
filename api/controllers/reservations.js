@@ -14,7 +14,7 @@ const getReservations = (req, res) => {
   }
 
   Reservation.findAll({
-    attributes: ["id", "passengers", "baggage", "date"],
+    attributes: ["id", "passengers", "baggage", "date", "active", "cancellationReason"],
     include: [
       {
         model: Route,
@@ -85,7 +85,7 @@ const getReservation = (req, res) => {
   let licencePlateEnd = new Date().setHours(new Date().getHours() + 8);
 
   Reservation.findOne({
-    attributes: ["id", "passengers", "baggage", "date"],
+    attributes: ["id", "passengers", "baggage", "date", "active", "cancellationReason"],
     include: [
       {
         model: Route,
@@ -172,7 +172,6 @@ const getReservation = (req, res) => {
       }
     })
     .catch((error) => {
-      console.log(error);
       return res.status(500).json({
         message: "Nekaj je šlo narobe. Prosimo, poskusi znova.",
       });
@@ -270,8 +269,52 @@ const createReservation = (req, res) => {
   }
 };
 
+// Cancel a reservation with the given ID
+const cancelReservation = (req, res) => {
+  if (!req.body.cancellationReason) {
+    return res.status(400).json({
+      message: "Vnesi razlog za preklic rezervacije.",
+    });
+  } else {
+    Reservation.findOne({ where: { id: req.params.id, userId: req.payload.id } })
+      .then((reservation) => {
+        if (reservation) {
+          if (reservation.active) {
+            reservation
+              .update({
+                active: false,
+                cancellationReason: req.body.cancellationReason,
+              })
+              .then((vehicle) => {
+                return res.status(200).json(vehicle);
+              })
+              .catch((error) => {
+                return res.status(500).json({
+                  message: "Nekaj je šlo narobe. Prosimo, poskusi znova.",
+                });
+              });
+          } else {
+            return res.status(400).json({
+              message: "Rezervacija je že preklicana.",
+            });
+          }
+        } else {
+          return res.status(404).json({
+            message: "Rezervacija s tem enoličnim identifikatorjem ne obstaja.",
+          });
+        }
+      })
+      .catch((error) => {
+        return res.status(500).json({
+          message: "Nekaj je šlo narobe. Prosimo, poskusi znova.",
+        });
+      });
+  }
+};
+
 module.exports = {
   getReservations,
   getReservation,
   createReservation,
+  cancelReservation,
 };

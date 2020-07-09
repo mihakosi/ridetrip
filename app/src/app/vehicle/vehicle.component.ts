@@ -41,22 +41,6 @@ export class VehicleComponent implements OnInit {
       });
   }
 
-  deleteVehicle(): void {
-    this.error.type = "loading";
-    this.error.message = "";
-
-    this.vehiclesService
-      .deleteVehicle(this.vehicle)
-      .then((vehicle) => {
-        this.errorService.onGetError.emit({ message: "Vozilo uspešno odstranjeno.", type: "success" });
-        this.router.navigateByUrl("/vehicles");
-      })
-      .catch((error) => {
-        this.error.type = "danger";
-        this.error.message = error;
-      });
-  }
-
   ngOnInit(): void {
     this.path.paramMap
       .pipe(

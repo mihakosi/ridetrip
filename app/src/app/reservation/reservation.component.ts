@@ -87,6 +87,27 @@ export class ReservationComponent implements OnInit {
     // }).addTo(map);
   }
 
+  cancelReservation(): void {
+    this.error.type = "loading";
+    this.error.message = "";
+
+    this.reservationsService
+      .cancelReservation(this.reservation)
+      .then((reservation) => {
+        this.error.type = "success";
+        this.error.message = "Rezervacija je preklicana.";
+
+        this.reservation.active = reservation.active;
+        this.reservation.cancellationReason = reservation.cancellationReason;
+
+        document.getElementById("dismissCancellation").click();
+      })
+      .catch((error) => {
+        this.error.type = "danger";
+        this.error.message = error;
+      });
+  }
+
   ngOnInit(): void {
     this.path.paramMap
       .pipe(

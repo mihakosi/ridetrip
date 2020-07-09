@@ -71,10 +71,17 @@ const getOffer = (req, res) => {
           "departure",
           "price",
           [
-            sequelize.literal(`CAST("offers"."passengers" - COALESCE(SUM("routes->reservations"."passengers"), 0) AS integer)`),
+            sequelize.literal(
+              `CAST("offers"."passengers" - COALESCE(SUM(CASE WHEN "routes->reservations"."active" = TRUE THEN "routes->reservations"."passengers" END), 0) AS integer)`
+            ),
             "passengersSpace",
           ],
-          [sequelize.literal(`CAST("offers"."baggage" - COALESCE(SUM("routes->reservations"."baggage"), 0) AS integer)`), "baggageSpace"],
+          [
+            sequelize.literal(
+              `CAST("offers"."baggage" - COALESCE(SUM(CASE WHEN "routes->reservations"."active" = TRUE THEN "routes->reservations"."baggage" END), 0) AS integer)`
+            ),
+            "baggageSpace",
+          ],
         ],
         include: [
           {
@@ -185,7 +192,6 @@ const createOffer = (req, res) => {
                   });
               })
               .catch((error) => {
-                console.log(error);
                 return res.status(500).json({
                   message: "Nekaj je šlo narobe. Prosimo, poskusi znova.",
                 });
@@ -202,7 +208,6 @@ const createOffer = (req, res) => {
         }
       })
       .catch((error) => {
-        console.log(error);
         return res.status(500).json({
           message: "Nekaj je šlo narobe. Prosimo, poskusi znova.",
         });
