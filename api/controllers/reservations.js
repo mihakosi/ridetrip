@@ -125,7 +125,7 @@ const getReservation = (req, res) => {
                         licencePlateStart / 1000
                       }) AND "routes"."departure" <= to_timestamp(${
                         licencePlateEnd / 1000
-                      }) THEN "routes->offer->vehicle"."licencePlate" END`
+                      }) AND "reservations"."active" = TRUE THEN "routes->offer->vehicle"."licencePlate" END`
                     ),
                     "licencePlate",
                   ],

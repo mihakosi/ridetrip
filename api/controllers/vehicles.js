@@ -124,23 +124,9 @@ const updateVehicle = (req, res) => {
   }
 };
 
-// Remove a vehicle with the given ID
-const deleteVehicle = (req, res) => {
-  Vehicle.destroy({ where: { id: req.params.id, ownerId: req.payload.id } })
-    .then(() => {
-      return res.status(204).json();
-    })
-    .catch((error) => {
-      return res.status(500).json({
-        message: "Nekaj je šlo narobe. Prosimo, poskusi znova.",
-      });
-    });
-};
-
 module.exports = {
   getVehicles,
   getVehicle,
   createVehicle,
   updateVehicle,
-  deleteVehicle,
 };

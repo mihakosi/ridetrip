@@ -33,7 +33,6 @@ router.get("/vehicles", authentication, vehiclesController.getVehicles);
 router.get("/vehicles/:id", authentication, vehiclesController.getVehicle);
 router.post("/vehicles", authentication, vehiclesController.createVehicle);
 router.put("/vehicles/:id", authentication, vehiclesController.updateVehicle);
-router.delete("/vehicles/:id", authentication, vehiclesController.deleteVehicle);
 
 /* Authentication */
 router.post("/auth/signin", authController.signIn);
