@@ -50,18 +50,18 @@ const setup = () => {
   console.log("Server started");
 };
 
-var client = new pg.Client(
-  `postgres://${process.env.POSTGRES_USER}:${process.env.POSTGRES_PASSWORD}@${process.env.POSTGRES_HOST}:${process.env.POSTGRES_PORT}/${process.env.POSTGRES_DATABASE_DEFAULT}`
-);
-client.connect();
-client
+var pool = new pg.Pool({
+  connectionString: `postgres://${process.env.POSTGRES_USER}:${process.env.POSTGRES_PASSWORD}@${process.env.POSTGRES_HOST}:${process.env.POSTGRES_PORT}/${process.env.POSTGRES_DATABASE_DEFAULT}`,
+});
+pool.connect();
+pool
   .query(`SELECT FROM pg_database WHERE datname='${process.env.POSTGRES_DATABASE}'`)
   .then((result) => {
     if (result.rowCount == 0) {
-      client
+      pool
         .query(`CREATE DATABASE ${process.env.POSTGRES_DATABASE}`)
         .then((result) => {
-          client.end();
+          pool.end();
           setup();
         })
         .catch((error) => {
