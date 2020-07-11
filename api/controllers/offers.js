@@ -70,18 +70,6 @@ const getOffer = (req, res) => {
           "endLongitude",
           "departure",
           "price",
-          [
-            sequelize.literal(
-              `CAST("offers"."passengers" - COALESCE(SUM(CASE WHEN "routes->reservations"."active" = TRUE THEN "routes->reservations"."passengers" END), 0) AS integer)`
-            ),
-            "passengersSpace",
-          ],
-          [
-            sequelize.literal(
-              `CAST("offers"."baggage" - COALESCE(SUM(CASE WHEN "routes->reservations"."active" = TRUE THEN "routes->reservations"."baggage" END), 0) AS integer)`
-            ),
-            "baggageSpace",
-          ],
         ],
         include: [
           {
@@ -108,6 +96,21 @@ const getOffer = (req, res) => {
   })
     .then((offer) => {
       if (offer) {
+        offer = offer.get({ plain: true });
+
+        // Calculate space left for passengers and baggage
+        offer.routes.forEach((route) => {
+          route.passengersSpace = offer.passengers;
+          route.baggageSpace = offer.baggage;
+
+          route.reservations.forEach((reservation) => {
+            if (reservation.active) {
+              route.passengersSpace -= reservation.passengers;
+              route.baggageSpace -= reservation.baggage;
+            }
+          });
+        });
+
         return res.status(200).json(offer);
       } else {
         return res.status(404).json({

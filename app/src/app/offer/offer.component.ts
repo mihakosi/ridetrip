@@ -4,7 +4,9 @@ import { switchMap } from "rxjs/operators";
 import L from "leaflet";
 import "leaflet-routing-machine";
 
+import { ErrorService } from "../error.service";
 import { OffersService } from "../offers.service";
+import { ReservationsService } from "../reservations.service";
 
 @Component({
   selector: "app-offer",
@@ -12,7 +14,12 @@ import { OffersService } from "../offers.service";
   styleUrls: ["./offer.component.css"],
 })
 export class OfferComponent implements OnInit {
-  constructor(private offersService: OffersService, private path: ActivatedRoute) {}
+  constructor(
+    private errorService: ErrorService,
+    private offersService: OffersService,
+    private reservationsService: ReservationsService,
+    private path: ActivatedRoute
+  ) {}
 
   public offer: any;
 
@@ -76,6 +83,31 @@ export class OfferComponent implements OnInit {
     //     return null;
     //   },
     // }).addTo(map);
+  }
+
+  cancelReservation(reservationActive: any): void {
+    this.error.type = "loading";
+    this.error.message = "";
+
+    reservationActive.cancellationReason = "Rezervacijo je preklical ponudnik prevoza.";
+
+    this.reservationsService
+      .cancelReservation(reservationActive)
+      .then((reservation) => {
+        this.error.type = "";
+        this.error.message = "";
+
+        this.errorService.onGetError.emit({ message: "Rezervacija je preklicana.", type: "success" });
+
+        reservationActive.active = reservation.active;
+        reservationActive.cancellationReason = reservation.cancellationReason;
+
+        this.offer.passengersSpace += reservationActive.passengers;
+        this.offer.baggageSpace += reservationActive.baggage;
+      })
+      .catch((error) => {
+        this.errorService.onGetError.emit({ message: error, type: "danger" });
+      });
   }
 
   cancelOffer(): void {

@@ -204,15 +204,12 @@ const createReservation = (req, res) => {
 
     // Get available space for passengers and baggage for each route
     Route.findAll({
-      attributes: [
-        "id",
-        [sequelize.literal("CAST(offer.passengers - COALESCE(SUM(reservations.passengers), 0) AS integer)"), "passengersSpace"],
-        [sequelize.literal("CAST(offer.baggage - COALESCE(SUM(reservations.baggage), 0) AS integer)"), "baggageSpace"],
-      ],
+      attributes: ["id"],
       include: [
         {
           model: Reservation,
           as: "reservations",
+          attributes: ["passengers", "baggage", "active"],
           through: {
             model: RouteReservation,
             as: "routeReservations",
@@ -236,6 +233,18 @@ const createReservation = (req, res) => {
         // Check if there is enough space for all the passengers and baggage
         let notEnoughSpace = routes.some((route) => {
           route = route.get({ plain: true });
+
+          // Calculate space left for passengers and baggage
+          route.passengersSpace = route.offer.passengers;
+          route.baggageSpace = route.offer.baggage;
+
+          route.reservations.forEach((reservation) => {
+            if (reservation.active) {
+              route.passengersSpace -= reservation.passengers;
+              route.baggageSpace -= reservation.baggage;
+            }
+          });
+
           return req.body.passengers > route.passengersSpace || req.body.baggage > route.baggageSpace;
         });
 
@@ -284,7 +293,34 @@ const cancelReservation = (req, res) => {
       message: "Vnesi razlog za preklic rezervacije.",
     });
   } else {
-    Reservation.findOne({ where: { id: req.params.id, userId: req.payload.id } })
+    Reservation.findOne({
+      include: [
+        {
+          model: Route,
+          as: "routes",
+          attributes: [],
+          through: {
+            model: RouteReservation,
+            as: "routeReservations",
+            attributes: [],
+          },
+          include: [
+            {
+              model: Offer,
+              as: "offer",
+              attributes: [],
+              where: {
+                active: true,
+              },
+            },
+          ],
+        },
+      ],
+      where: {
+        id: req.params.id,
+        [Sequelize.Op.or]: [{ userId: req.payload.id }, { "$routes->offer.driverId$": req.payload.id }],
+      },
+    })
       .then((reservation) => {
         if (reservation) {
           if (reservation.active) {

@@ -33,7 +33,7 @@ const getRides = (req, res) => {
 
     // Get offers that have stops located within 6 miles of provided start and end location
     Offer.findAll({
-      attributes: ["id"],
+      attributes: ["id", "passengers", "baggage"],
       include: [
         {
           model: Route,
@@ -44,18 +44,6 @@ const getRides = (req, res) => {
             "endSimple",
             "price",
             "departure",
-            [
-              sequelize.literal(
-                `CAST("offers"."passengers" - COALESCE(SUM(CASE WHEN "routes->reservations"."active" = TRUE THEN "routes->reservations"."passengers" END), 0) AS integer)`
-              ),
-              "passengersSpace",
-            ],
-            [
-              sequelize.literal(
-                `CAST("offers"."baggage" - COALESCE(SUM(CASE WHEN "routes->reservations"."active" = TRUE THEN "routes->reservations"."baggage" END), 0) AS integer)`
-              ),
-              "baggageSpace",
-            ],
             [
               sequelize.literal(
                 `point(${req.query.startLongitude}, ${req.query.startLatitude}) <@> point("routes"."startLongitude", "routes"."startLatitude")::point`
@@ -73,7 +61,7 @@ const getRides = (req, res) => {
             {
               model: Reservation,
               as: "reservations",
-              attributes: [],
+              attributes: ["passengers", "baggage", "active"],
               through: {
                 model: RouteReservation,
                 as: "routeReservations",
@@ -115,6 +103,19 @@ const getRides = (req, res) => {
         // Total price is also calculated manually
         rides.forEach((ride) => {
           ride = ride.get({ plain: true });
+
+          // Calculate space left for passengers and baggage
+          ride.routes.forEach((route) => {
+            route.passengersSpace = ride.passengers;
+            route.baggageSpace = ride.baggage;
+
+            route.reservations.forEach((reservation) => {
+              if (reservation.active) {
+                route.passengersSpace -= reservation.passengers;
+                route.baggageSpace -= reservation.baggage;
+              }
+            });
+          });
 
           let start = ride.routes[0].id;
           let end = ride.routes[ride.routes.length - 1].id;
@@ -192,7 +193,7 @@ const getRide = (req, res) => {
     }
 
     Offer.findOne({
-      attributes: ["id", "description"],
+      attributes: ["id", "description", "passengers", "baggage"],
       include: [
         {
           model: Route,
@@ -211,18 +212,6 @@ const getRide = (req, res) => {
             "departure",
             [
               sequelize.literal(
-                `CAST("offers"."passengers" - COALESCE(SUM(CASE WHEN "routes->reservations"."active" = TRUE THEN "routes->reservations"."passengers" END), 0) AS integer)`
-              ),
-              "passengersSpace",
-            ],
-            [
-              sequelize.literal(
-                `CAST("offers"."baggage" - COALESCE(SUM(CASE WHEN "routes->reservations"."active" = TRUE THEN "routes->reservations"."baggage" END), 0) AS integer)`
-              ),
-              "baggageSpace",
-            ],
-            [
-              sequelize.literal(
                 `point(${req.query.startLongitude}, ${req.query.startLatitude}) <@> point("routes"."startLongitude", "routes"."startLatitude")::point`
               ),
               "startDistance",
@@ -238,7 +227,7 @@ const getRide = (req, res) => {
             {
               model: Reservation,
               as: "reservations",
-              attributes: [],
+              attributes: ["passengers", "baggage", "active"],
               through: {
                 model: RouteReservation,
                 as: "routeReservations",
@@ -264,10 +253,29 @@ const getRide = (req, res) => {
     })
       .then((ride) => {
         if (ride) {
-          // Check if the ride is full on any route between start and end location
-          // Total price is also calculated manually
           ride = ride.get({ plain: true });
 
+          // Calculate space left for passengers and baggage
+          let routes = [];
+
+          ride.routes.forEach((route) => {
+            route.passengersSpace = ride.passengers;
+            route.baggageSpace = ride.baggage;
+
+            route.reservations.forEach((reservation) => {
+              if (reservation.active) {
+                route.passengersSpace -= reservation.passengers;
+                route.baggageSpace -= reservation.baggage;
+              }
+            });
+
+            routes.push(route);
+          });
+
+          ride.routes = routes;
+
+          // Check if the ride is full on any route between start and end location
+          // Total price is also calculated manually
           ride.price = 0.0;
           ride.passengersSpace = -1;
           ride.baggageSpace = -1;
@@ -275,7 +283,7 @@ const getRide = (req, res) => {
           let start = ride.routes[0].id;
           let end = ride.routes[ride.routes.length - 1].id;
 
-          let routes = [];
+          routes = [];
           let notEnoughSpace = false;
 
           let minStartDistance = -1;

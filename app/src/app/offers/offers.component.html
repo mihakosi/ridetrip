@@ -15,12 +15,15 @@
   <ng-container *ngIf="offers">
     <ul class="list-group mt-2" *ngIf="offers.length > 0">
       <a routerLink="/offers/{{ offer.id }}" class="list-group-item" *ngFor="let offer of offers">
-        <div class="row align-items-center justify-content-between">
+        <div class="row align-items-end justify-content-between">
           <div class="col">
             <p class="mb-1">
               <strong>{{ offer.routes[0].startSimple }}</strong> - <strong>{{ offer.routes[offer.routes.length - 1].endSimple }}</strong>
             </p>
             <small class="text-secondary">{{ offer.routes[0].departure | date: "d. M. yyyy, H:mm" }}</small>
+          </div>
+          <div class="col-auto text-right">
+            <small class="text-secondary" *ngIf="!offer.active">Prevoz preklican</small>
           </div>
         </div>
       </a>
