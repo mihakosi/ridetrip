@@ -78,6 +78,27 @@ export class OfferComponent implements OnInit {
     // }).addTo(map);
   }
 
+  cancelOffer(): void {
+    this.error.type = "loading";
+    this.error.message = "";
+
+    this.offersService
+      .cancelOffer(this.offer)
+      .then((offer) => {
+        this.error.type = "success";
+        this.error.message = "Prevoz je preklican.";
+
+        this.offer.active = offer.active;
+        this.offer.cancellationReason = offer.cancellationReason;
+
+        document.getElementById("dismissCancellation").click();
+      })
+      .catch((error) => {
+        this.error.type = "danger";
+        this.error.message = error;
+      });
+  }
+
   ngOnInit(): void {
     this.path.paramMap
       .pipe(

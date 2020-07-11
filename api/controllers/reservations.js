@@ -1,5 +1,6 @@
 const Sequelize = require("sequelize");
 const { sequelize, Offer, Reservation, RouteReservation, Route } = require("../models/db");
+const offers = require("./offers");
 
 // Get all reservations
 const getReservations = (req, res) => {
@@ -41,8 +42,7 @@ const getReservations = (req, res) => {
           {
             model: Offer,
             as: "offer",
-            attributes: [],
-            where: { active: true },
+            attributes: ["active", "cancellationReason"],
           },
         ],
         where: {
@@ -53,7 +53,13 @@ const getReservations = (req, res) => {
       },
     ],
     where: { userId: req.payload.id },
-    group: ["reservations.id", "routes.id", "routes->routeReservations.reservationId", "routes->routeReservations.routeId"],
+    group: [
+      "reservations.id",
+      "routes.id",
+      "routes->routeReservations.reservationId",
+      "routes->routeReservations.routeId",
+      "routes->offer.id",
+    ],
     order: [["routes", "departure", order]],
   })
     .then((reservations) => {
@@ -112,7 +118,7 @@ const getReservation = (req, res) => {
           {
             model: Offer,
             as: "offer",
-            attributes: ["id"],
+            attributes: ["id", "active", "cancellationReason"],
             include: [
               {
                 model: Vehicle,
@@ -137,7 +143,6 @@ const getReservation = (req, res) => {
                 attributes: ["id", "firstName", "lastName", "image"],
               },
             ],
-            where: { active: true },
           },
         ],
       },
@@ -217,6 +222,9 @@ const createReservation = (req, res) => {
         {
           model: Offer,
           as: "offer",
+          where: {
+            active: true,
+          },
         },
       ],
       where: {
@@ -285,8 +293,8 @@ const cancelReservation = (req, res) => {
                 active: false,
                 cancellationReason: req.body.cancellationReason,
               })
-              .then((vehicle) => {
-                return res.status(200).json(vehicle);
+              .then((reservation) => {
+                return res.status(200).json(reservation);
               })
               .catch((error) => {
                 return res.status(500).json({

@@ -14,6 +14,15 @@
 <div id="map" class="map-small" *ngIf="error.type != 'data'"></div>
 <ng-container *ngIf="reservation">
   <div class="container my-3">
+    <ng-container *ngIf="!reservation.routes[0].offer.active">
+      <div class="alert alert-danger">
+        <p class="m-0">Prevoz je preklican.</p>
+      </div>
+      <div class="form-group pb-2">
+        <small class="text-secondary">Razlog za preklic prevoza</small>
+        <p class="m-0">{{ reservation.routes[0].offer.cancellationReason }}</p>
+      </div>
+    </ng-container>
     <ng-container *ngIf="!reservation.active">
       <div class="alert alert-warning">
         <p class="m-0">Rezervacija je preklicana.</p>
@@ -106,7 +115,7 @@
     <div class="form-group">
       <p>{{ reservation.routes[0].offer.description }}</p>
     </div>
-    <div class="text-right" *ngIf="reservation.active">
+    <div class="text-right" *ngIf="reservation.active && reservation.routes[0].offer.active">
       <button class="btn btn-danger" data-toggle="modal" data-target="#cancelReservation">Prekliči rezervacijo</button>
     </div>
   </div>

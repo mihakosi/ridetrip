@@ -14,6 +14,15 @@
 <div id="map" class="map-small" *ngIf="error.type != 'data'"></div>
 <ng-container *ngIf="offer">
   <div class="container my-3">
+    <ng-container *ngIf="!offer.active">
+      <div class="alert alert-warning">
+        <p class="m-0">Prevoz je preklican.</p>
+      </div>
+      <div class="form-group pb-2">
+        <small class="text-secondary">Razlog za preklic prevoza</small>
+        <p class="m-0">{{ offer.cancellationReason }}</p>
+      </div>
+    </ng-container>
     <div class="row">
       <div class="col-12">
         <div class="form-group">
@@ -107,12 +116,42 @@
     <div class="form-group">
       <p>{{ offer.description }}</p>
     </div>
+    <div class="text-right" *ngIf="offer.active">
+      <button class="btn btn-danger" data-toggle="modal" data-target="#cancelOffer">Prekliči prevoz</button>
+    </div>
+  </div>
+  <div class="modal fade modal-bottom" id="cancelOffer" tabindex="-1" role="dialog">
+    <div class="modal-dialog w-100" role="document">
+      <div class="modal-content">
+        <div class="container py-3">
+          <div class="form-group w-100">
+            <label for="cancellationReason">Zakaj odpoveduješ prevoz?</label>
+            <textarea
+              class="form-control"
+              id="cancellationReason"
+              [(ngModel)]="offer.cancellationReason"
+              name="cancellationReason"
+            ></textarea>
+            <small class="text-muted">Upravičeni razlogi za odpoved so na primer bolezen, nujen opravek in podobno.</small>
+          </div>
+          <div class="alert alert-{{ error.type }}" *ngIf="error.type && error.type != 'data' && error.type != 'loading'">
+            <p class="m-0">{{ error.message }}</p>
+          </div>
+          <div class="d-flex justify-content-between">
+            <button type="button" class="btn btn-link" id="dismissCancellation" data-dismiss="modal">Nazaj</button>
+            <button type="button" class="btn btn-danger" (click)="cancelOffer()" [disabled]="error.type === 'loading'">
+              Odpovej prevoz
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </ng-container>
 <div *ngIf="!offer && !error.type">
   <div class="loader"></div>
 </div>
-<div class="text-center text-secondary py-3" *ngIf="error.type">
+<div class="text-center text-secondary py-3" *ngIf="error.type && error.type === 'data'">
   <h1><i class="fas fa-car"></i></h1>
   <p>{{ error.message }}</p>
   <a routerLink="/offers">Nazaj na ponujene prevoze</a>

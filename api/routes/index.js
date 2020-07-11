@@ -17,6 +17,7 @@ const authController = require("../controllers/auth");
 router.get("/offers", authentication, offersController.getOffers);
 router.get("/offers/:id", authentication, offersController.getOffer);
 router.post("/offers", authentication, offersController.createOffer);
+router.put("/offers/:id/cancel", authentication, offersController.cancelOffer);
 
 /* Rides */
 router.get("/rides", authentication, ridesController.getRides);

@@ -102,6 +102,9 @@ const getRides = (req, res) => {
           },
         },
       ],
+      where: {
+        active: true,
+      },
       group: ["offers.id", "routes.id", "routes->reservations.id"],
       order: [["routes", "departure", "ASC"]],
     })
@@ -255,7 +258,7 @@ const getRide = (req, res) => {
           attributes: ["model"],
         },
       ],
-      where: { id: req.params.id },
+      where: { id: req.params.id, active: true },
       group: ["offers.id", "routes.id", "routes->reservations.id", "driver.id", "vehicle.id"],
       order: [["routes", "departure", "ASC"]],
     })

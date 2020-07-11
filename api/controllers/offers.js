@@ -215,8 +215,52 @@ const createOffer = (req, res) => {
   }
 };
 
+// Cancel a reservation with the given ID
+const cancelOffer = (req, res) => {
+  if (!req.body.cancellationReason) {
+    return res.status(400).json({
+      message: "Vnesi razlog za preklic prevoza.",
+    });
+  } else {
+    Offer.findOne({ where: { id: req.params.id, driverId: req.payload.id } })
+      .then((offer) => {
+        if (offer) {
+          if (offer.active) {
+            offer
+              .update({
+                active: false,
+                cancellationReason: req.body.cancellationReason,
+              })
+              .then((offer) => {
+                return res.status(200).json(offer);
+              })
+              .catch((error) => {
+                return res.status(500).json({
+                  message: "Nekaj je šlo narobe. Prosimo, poskusi znova.",
+                });
+              });
+          } else {
+            return res.status(400).json({
+              message: "Ponujen prevoz je že preklican.",
+            });
+          }
+        } else {
+          return res.status(404).json({
+            message: "Ponujen prevoz s tem enoličnim identifikatorjem ne obstaja.",
+          });
+        }
+      })
+      .catch((error) => {
+        return res.status(500).json({
+          message: "Nekaj je šlo narobe. Prosimo, poskusi znova.",
+        });
+      });
+  }
+};
+
 module.exports = {
   getOffers,
   getOffer,
   createOffer,
+  cancelOffer,
 };

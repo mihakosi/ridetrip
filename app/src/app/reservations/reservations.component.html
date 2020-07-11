@@ -23,10 +23,13 @@
             </p>
             <small class="text-secondary">{{ reservation.routes[0].departure | date: "d. M. yyyy, H:mm" }}</small>
           </div>
-          <div class="col-auto">
-            <p class="mb-0">
+          <div class="col-auto text-right">
+            <p class="mb-1">
               <strong>{{ reservation.price | currency: "EUR" }}</strong>
             </p>
+            <small class="text-secondary" *ngIf="!reservation.active || !reservation.routes[0].offer.active">{{
+              !reservation.active ? "Rezervacija preklicana" : "Prevoz preklican"
+            }}</small>
           </div>
         </div>
       </a>
