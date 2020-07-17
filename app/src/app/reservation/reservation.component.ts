@@ -4,6 +4,7 @@ import { switchMap } from "rxjs/operators";
 import L from "leaflet";
 import "leaflet-routing-machine";
 
+import { ErrorService } from "../error.service";
 import { ReservationsService } from "../reservations.service";
 
 @Component({
@@ -12,7 +13,7 @@ import { ReservationsService } from "../reservations.service";
   styleUrls: ["./reservation.component.css"],
 })
 export class ReservationComponent implements OnInit {
-  constructor(private reservationsService: ReservationsService, private path: ActivatedRoute) {}
+  constructor(private errorService: ErrorService, private reservationsService: ReservationsService, private path: ActivatedRoute) {}
 
   public reservation: any;
 
@@ -20,6 +21,16 @@ export class ReservationComponent implements OnInit {
     type: "",
     message: "",
   };
+
+  public cancellable: boolean;
+
+  map: any;
+
+  public sharingLocation: boolean = false;
+
+  watchPosition;
+
+  marker: any;
 
   initializeMap(): void {
     var bluePin = L.icon({
@@ -43,19 +54,19 @@ export class ReservationComponent implements OnInit {
       popupAnchor: [0, -30],
     });
 
-    var map = L.map("map", { zoomControl: false }).setView([46.188, 15.079], 7);
+    this.map = L.map("map", { zoomControl: false }).setView([46.188, 15.079], 7);
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    }).addTo(map);
+    }).addTo(this.map);
 
     let waypoints = [];
 
-    L.marker([this.reservation.routes[0].startLatitude, this.reservation.routes[0].startLongitude], { icon: redPin }).addTo(map);
+    L.marker([this.reservation.routes[0].startLatitude, this.reservation.routes[0].startLongitude], { icon: redPin }).addTo(this.map);
     waypoints.push(L.latLng(this.reservation.routes[0].startLatitude, this.reservation.routes[0].startLongitude));
 
     for (var i = 1; i < this.reservation.routes.length; i++) {
-      L.marker([this.reservation.routes[i].startLatitude, this.reservation.routes[i].startLongitude], { icon: bluePin }).addTo(map);
+      L.marker([this.reservation.routes[i].startLatitude, this.reservation.routes[i].startLongitude], { icon: bluePin }).addTo(this.map);
       waypoints.push(L.latLng(this.reservation.routes[i].startLatitude, this.reservation.routes[i].startLongitude));
     }
 
@@ -67,7 +78,7 @@ export class ReservationComponent implements OnInit {
       {
         icon: greenPin,
       }
-    ).addTo(map);
+    ).addTo(this.map);
     waypoints.push(
       L.latLng(
         this.reservation.routes[this.reservation.routes.length - 1].endLatitude,
@@ -85,6 +96,55 @@ export class ReservationComponent implements OnInit {
     //     return null;
     //   },
     // }).addTo(map);
+  }
+
+  shareLocation(): void {
+    this.sharingLocation = true;
+
+    // Icon created by Twitter
+    var userPin = L.icon({
+      iconUrl: "/assets/images/traveller.svg",
+      iconSize: [40, 40],
+      iconAnchor: [20, 40],
+      popupAnchor: [0, -40],
+    });
+
+    this.watchPosition = navigator.geolocation.watchPosition(
+      (position) => {
+        let location = {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        };
+
+        this.reservationsService
+          .shareLocation(this.reservation, location)
+          .then((reservation) => {
+            if (this.marker) {
+              this.map.removeLayer(this.marker);
+            }
+
+            this.marker = L.marker([reservation.latitude, reservation.longitude], { icon: userPin });
+            this.marker.addTo(this.map);
+          })
+          .catch((error) => {
+            this.errorService.onGetError.emit({ message: error, type: "danger" });
+          });
+      },
+      (error) => {
+        this.errorService.onGetError.emit({ message: "Lokacije ni mogoče pridobiti.", type: "danger" });
+      },
+      {
+        enableHighAccuracy: false,
+        timeout: 30000,
+        maximumAge: 5000,
+      }
+    );
+  }
+
+  stopShareLocation(): void {
+    this.sharingLocation = false;
+
+    navigator.geolocation.clearWatch(this.watchPosition);
   }
 
   cancelReservation(): void {
@@ -120,6 +180,9 @@ export class ReservationComponent implements OnInit {
         (reservation: any) => {
           this.reservation = reservation;
           this.initializeMap();
+
+          let today = new Date();
+          this.cancellable = (new Date(reservation.routes[0].departure).getTime() - today.getTime()) / (60 * 60 * 1000) >= 8;
         },
         (error) => {
           this.error.type = "data";

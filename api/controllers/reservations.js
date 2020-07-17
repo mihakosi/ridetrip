@@ -298,7 +298,7 @@ const cancelReservation = (req, res) => {
         {
           model: Route,
           as: "routes",
-          attributes: [],
+          attributes: ["id", "departure"],
           through: {
             model: RouteReservation,
             as: "routeReservations",
@@ -324,22 +324,91 @@ const cancelReservation = (req, res) => {
       .then((reservation) => {
         if (reservation) {
           if (reservation.active) {
-            reservation
-              .update({
-                active: false,
-                cancellationReason: req.body.cancellationReason,
-              })
-              .then((reservation) => {
-                return res.status(200).json(reservation);
-              })
-              .catch((error) => {
-                return res.status(500).json({
-                  message: "Nekaj je šlo narobe. Prosimo, poskusi znova.",
+            // Reservation can be cancelled at most 8 hours before the departure
+            if ((reservation.get({ plain: true }).routes[0].departure - new Date()) / (60 * 60 * 1000) >= 8) {
+              reservation
+                .update({
+                  active: false,
+                  cancellationReason: req.body.cancellationReason,
+                })
+                .then((reservation) => {
+                  return res.status(200).json(reservation);
+                })
+                .catch((error) => {
+                  return res.status(500).json({
+                    message: "Nekaj je šlo narobe. Prosimo, poskusi znova.",
+                  });
                 });
+            } else {
+              return res.status(400).json({
+                message: "Rezervacijo je možno preklicati največ 8 ur pred odhodom.",
               });
+            }
           } else {
             return res.status(400).json({
               message: "Rezervacija je že preklicana.",
+            });
+          }
+        } else {
+          return res.status(404).json({
+            message: "Rezervacija s tem enoličnim identifikatorjem ne obstaja.",
+          });
+        }
+      })
+      .catch((error) => {
+        return res.status(500).json({
+          message: "Nekaj je šlo narobe. Prosimo, poskusi znova.",
+        });
+      });
+  }
+};
+
+// Update passenger's location for a reservation with the given ID
+const shareLocation = (req, res) => {
+  if (!req.body.latitude || !req.body.longitude) {
+    return res.status(400).json({
+      message: "Napaka pri razpoznavanju lokacije.",
+    });
+  } else {
+    Reservation.findOne({
+      include: {
+        model: Route,
+        as: "routes",
+        attributes: ["id", "departure"],
+        through: {
+          model: RouteReservation,
+          as: "routeReservations",
+          attributes: [],
+        },
+      },
+      where: { id: req.params.id, userId: req.payload.id },
+    })
+      .then((reservation) => {
+        if (reservation) {
+          if (reservation.active) {
+            // Location can be shared at most 1 hour before and after the departure from the start location
+            if (Math.abs(reservation.get({ plain: true }).routes[0].departure - new Date()) / (60 * 60 * 1000) < 1) {
+              reservation
+                .update({
+                  latitude: req.body.latitude,
+                  longitude: req.body.longitude,
+                })
+                .then((reservation) => {
+                  return res.status(200).json(reservation);
+                })
+                .catch((error) => {
+                  return res.status(500).json({
+                    message: "Nekaj je šlo narobe. Prosimo, poskusi znova.",
+                  });
+                });
+            } else {
+              return res.status(400).json({
+                message: "Lokacijo lahko deliš največ 1 uro pred oziroma po odhodu.",
+              });
+            }
+          } else {
+            return res.status(400).json({
+              message: "Rezervacija je preklican.",
             });
           }
         } else {
@@ -361,4 +430,5 @@ module.exports = {
   getReservation,
   createReservation,
   cancelReservation,
+  shareLocation,
 };

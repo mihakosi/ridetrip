@@ -121,7 +121,11 @@
     <div class="form-group">
       <p>{{ offer.description }}</p>
     </div>
-    <div class="text-right" *ngIf="offer.active">
+    <div class="text-right" *ngIf="offer.active && !cancellable">
+      <button class="btn btn-primary" (click)="shareLocation()" *ngIf="!sharingLocation">Deli lokacijo</button>
+      <button class="btn btn-danger" (click)="stopShareLocation()" *ngIf="sharingLocation">Prenehaj deliti lokacijo</button>
+    </div>
+    <div class="text-right" *ngIf="offer.active && cancellable">
       <button class="btn btn-danger" data-toggle="modal" data-target="#cancelOffer">Prekliči prevoz</button>
     </div>
   </div>

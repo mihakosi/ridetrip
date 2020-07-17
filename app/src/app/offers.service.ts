@@ -73,6 +73,21 @@ export class OffersService {
       .catch(this.handleError);
   }
 
+  public shareLocation(offer: any, location: any): Promise<any> {
+    const url: string = `${this.apiUrl}/offers/${offer.id}/location`;
+    const httpHeaders = {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${this.storage.getItem("token")}`,
+      }),
+    };
+
+    return this.http
+      .put(url, location, httpHeaders)
+      .toPromise()
+      .then((result) => result as any)
+      .catch(this.handleError);
+  }
+
   private handleError(error: any): Promise<any> {
     return Promise.reject(error.error.message || "Podatkov ni mogoče pridobiti.");
   }

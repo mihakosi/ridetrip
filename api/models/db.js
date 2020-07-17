@@ -53,7 +53,7 @@ sequelize.query(`CREATE EXTENSION IF NOT EXISTS cube`).then(() => {
   sequelize.query(`CREATE EXTENSION IF NOT EXISTS earthdistance`).then(() => {
     /* Sync */
     sequelize
-      .sync()
+      .sync(/*{ force: true }*/)
       .then(() => {
         console.log("Tables created.");
 

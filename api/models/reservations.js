@@ -27,6 +27,12 @@ module.exports = function (sequelize, DataTypes) {
       cancellationReason: {
         type: DataTypes.TEXT,
       },
+      latitude: {
+        type: DataTypes.DOUBLE,
+      },
+      longitude: {
+        type: DataTypes.DOUBLE,
+      },
     },
     {
       timestamps: false,

@@ -28,6 +28,16 @@ export class OfferComponent implements OnInit {
     message: "",
   };
 
+  public cancellable: boolean;
+
+  map: any;
+
+  public sharingLocation: boolean = false;
+
+  watchPosition;
+
+  marker: any;
+
   initializeMap(): void {
     var bluePin = L.icon({
       iconUrl: "/assets/images/pin_blue.svg",
@@ -50,25 +60,25 @@ export class OfferComponent implements OnInit {
       popupAnchor: [0, -30],
     });
 
-    var map = L.map("map", { zoomControl: false }).setView([46.188, 15.079], 7);
+    this.map = L.map("map", { zoomControl: false }).setView([46.188, 15.079], 7);
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    }).addTo(map);
+    }).addTo(this.map);
 
     let waypoints = [];
 
-    L.marker([this.offer.routes[0].startLatitude, this.offer.routes[0].startLongitude], { icon: redPin }).addTo(map);
+    L.marker([this.offer.routes[0].startLatitude, this.offer.routes[0].startLongitude], { icon: redPin }).addTo(this.map);
     waypoints.push(L.latLng(this.offer.routes[0].startLatitude, this.offer.routes[0].startLongitude));
 
     for (var i = 1; i < this.offer.routes.length; i++) {
-      L.marker([this.offer.routes[i].startLatitude, this.offer.routes[i].startLongitude], { icon: bluePin }).addTo(map);
+      L.marker([this.offer.routes[i].startLatitude, this.offer.routes[i].startLongitude], { icon: bluePin }).addTo(this.map);
       waypoints.push(L.latLng(this.offer.routes[i].startLatitude, this.offer.routes[i].startLongitude));
     }
 
     L.marker([this.offer.routes[this.offer.routes.length - 1].endLatitude, this.offer.routes[this.offer.routes.length - 1].endLongitude], {
       icon: greenPin,
-    }).addTo(map);
+    }).addTo(this.map);
     waypoints.push(
       L.latLng(this.offer.routes[this.offer.routes.length - 1].endLatitude, this.offer.routes[this.offer.routes.length - 1].endLongitude)
     );
@@ -83,6 +93,55 @@ export class OfferComponent implements OnInit {
     //     return null;
     //   },
     // }).addTo(map);
+  }
+
+  shareLocation(): void {
+    this.sharingLocation = true;
+
+    // Icon created by Twitter
+    var userPin = L.icon({
+      iconUrl: "/assets/images/car.svg",
+      iconSize: [40, 40],
+      iconAnchor: [20, 40],
+      popupAnchor: [0, -40],
+    });
+
+    this.watchPosition = navigator.geolocation.watchPosition(
+      (position) => {
+        let location = {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        };
+
+        this.offersService
+          .shareLocation(this.offer, location)
+          .then((offer) => {
+            if (this.marker) {
+              this.map.removeLayer(this.marker);
+            }
+
+            this.marker = L.marker([offer.latitude, offer.longitude], { icon: userPin });
+            this.marker.addTo(this.map);
+          })
+          .catch((error) => {
+            this.errorService.onGetError.emit({ message: error, type: "danger" });
+          });
+      },
+      (error) => {
+        this.errorService.onGetError.emit({ message: "Lokacije ni mogoče pridobiti.", type: "danger" });
+      },
+      {
+        enableHighAccuracy: false,
+        timeout: 30000,
+        maximumAge: 5000,
+      }
+    );
+  }
+
+  stopShareLocation(): void {
+    this.sharingLocation = false;
+
+    navigator.geolocation.clearWatch(this.watchPosition);
   }
 
   cancelReservation(reservationActive: any): void {
@@ -143,6 +202,9 @@ export class OfferComponent implements OnInit {
         (offer: any) => {
           this.offer = offer;
           this.initializeMap();
+
+          let today = new Date();
+          this.cancellable = (new Date(offer.routes[0].departure).getTime() - today.getTime()) / (60 * 60 * 1000) >= 8;
         },
         (error) => {
           this.error.type = "data";
