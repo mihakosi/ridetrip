@@ -30,7 +30,11 @@ export class ReservationComponent implements OnInit {
 
   watchPosition;
 
-  marker: any;
+  locationInterval;
+
+  driverMarker: any;
+
+  passengerMarker: any;
 
   initializeMap(): void {
     var bluePin = L.icon({
@@ -86,24 +90,31 @@ export class ReservationComponent implements OnInit {
       )
     );
 
-    // Routing: turned off to minimize number of requests
-    // L.Routing.control({
-    //   waypoints: waypoints,
-    //   lineOptions: {
-    //     addWaypoints: false,
-    //   },
-    //   createMarker: function () {
-    //     return null;
-    //   },
-    // }).addTo(map);
+    // Routing
+    L.Routing.control({
+      waypoints: waypoints,
+      lineOptions: {
+        addWaypoints: false,
+      },
+      createMarker: function () {
+        return null;
+      },
+    }).addTo(this.map);
   }
 
   shareLocation(): void {
     this.sharingLocation = true;
 
-    // Icon created by Twitter
-    var userPin = L.icon({
-      iconUrl: "/assets/images/traveller.svg",
+    // Icons created by Twitter
+    var passengerPin = L.icon({
+      iconUrl: "/assets/images/passenger.svg",
+      iconSize: [40, 40],
+      iconAnchor: [20, 40],
+      popupAnchor: [0, -40],
+    });
+
+    var driverPin = L.icon({
+      iconUrl: "/assets/images/car.svg",
       iconSize: [40, 40],
       iconAnchor: [20, 40],
       popupAnchor: [0, -40],
@@ -119,12 +130,14 @@ export class ReservationComponent implements OnInit {
         this.reservationsService
           .shareLocation(this.reservation, location)
           .then((reservation) => {
-            if (this.marker) {
-              this.map.removeLayer(this.marker);
+            if (this.passengerMarker) {
+              this.map.removeLayer(this.passengerMarker);
             }
 
-            this.marker = L.marker([reservation.latitude, reservation.longitude], { icon: userPin });
-            this.marker.addTo(this.map);
+            if (reservation.latitude && reservation.longitude) {
+              this.passengerMarker = L.marker([reservation.latitude, reservation.longitude], { icon: passengerPin });
+              this.passengerMarker.addTo(this.map);
+            }
           })
           .catch((error) => {
             this.errorService.onGetError.emit({ message: error, type: "danger" });
@@ -139,12 +152,26 @@ export class ReservationComponent implements OnInit {
         maximumAge: 5000,
       }
     );
+
+    this.locationInterval = setInterval(() => {
+      this.reservationsService.getLocation(this.reservation).then((location) => {
+        if (this.driverMarker) {
+          this.map.removeLayer(this.driverMarker);
+        }
+
+        if (location.latitude && location.longitude) {
+          this.driverMarker = L.marker([location.latitude, location.longitude], { icon: driverPin });
+          this.driverMarker.addTo(this.map);
+        }
+      });
+    }, 5000);
   }
 
   stopShareLocation(): void {
     this.sharingLocation = false;
 
     navigator.geolocation.clearWatch(this.watchPosition);
+    clearInterval(this.locationInterval);
   }
 
   cancelReservation(): void {

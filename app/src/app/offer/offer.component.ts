@@ -36,7 +36,11 @@ export class OfferComponent implements OnInit {
 
   watchPosition;
 
-  marker: any;
+  locationInterval;
+
+  driverMarker: any;
+
+  passengerMarkers: any = {};
 
   initializeMap(): void {
     var bluePin = L.icon({
@@ -83,23 +87,30 @@ export class OfferComponent implements OnInit {
       L.latLng(this.offer.routes[this.offer.routes.length - 1].endLatitude, this.offer.routes[this.offer.routes.length - 1].endLongitude)
     );
 
-    // Routing: turned off to minimize number of requests
-    // L.Routing.control({
-    //   waypoints: waypoints,
-    //   lineOptions: {
-    //     addWaypoints: false,
-    //   },
-    //   createMarker: function () {
-    //     return null;
-    //   },
-    // }).addTo(map);
+    // Routing
+    L.Routing.control({
+      waypoints: waypoints,
+      lineOptions: {
+        addWaypoints: false,
+      },
+      createMarker: function () {
+        return null;
+      },
+    }).addTo(this.map);
   }
 
   shareLocation(): void {
     this.sharingLocation = true;
 
-    // Icon created by Twitter
-    var userPin = L.icon({
+    // Icons created by Twitter
+    var passengerPin = L.icon({
+      iconUrl: "/assets/images/passenger.svg",
+      iconSize: [40, 40],
+      iconAnchor: [20, 40],
+      popupAnchor: [0, -40],
+    });
+
+    var driverPin = L.icon({
       iconUrl: "/assets/images/car.svg",
       iconSize: [40, 40],
       iconAnchor: [20, 40],
@@ -116,12 +127,14 @@ export class OfferComponent implements OnInit {
         this.offersService
           .shareLocation(this.offer, location)
           .then((offer) => {
-            if (this.marker) {
-              this.map.removeLayer(this.marker);
+            if (this.driverMarker) {
+              this.map.removeLayer(this.driverMarker);
             }
 
-            this.marker = L.marker([offer.latitude, offer.longitude], { icon: userPin });
-            this.marker.addTo(this.map);
+            if (offer.latitude && offer.longitude) {
+              this.driverMarker = L.marker([offer.latitude, offer.longitude], { icon: driverPin });
+              this.driverMarker.addTo(this.map);
+            }
           })
           .catch((error) => {
             this.errorService.onGetError.emit({ message: error, type: "danger" });
@@ -136,12 +149,35 @@ export class OfferComponent implements OnInit {
         maximumAge: 5000,
       }
     );
+
+    this.locationInterval = setInterval(() => {
+      this.offersService
+        .getLocation(this.offer)
+        .then((location) => {
+          location.forEach((coords) => {
+            if (this.passengerMarkers[coords.id]) {
+              this.map.removeLayer(this.passengerMarkers[coords.id]);
+            }
+
+            if (coords.latitude && coords.longitude) {
+              let marker = L.marker([coords.latitude, coords.longitude], { icon: passengerPin });
+              marker.addTo(this.map);
+
+              this.passengerMarkers[coords.id] = marker;
+            }
+          });
+        })
+        .catch((error) => {
+          this.errorService.onGetError.emit({ message: "Lokacij potnikov ni mogoče pridobiti.", type: "danger" });
+        });
+    }, 5000);
   }
 
   stopShareLocation(): void {
     this.sharingLocation = false;
 
     navigator.geolocation.clearWatch(this.watchPosition);
+    clearInterval(this.locationInterval);
   }
 
   cancelReservation(reservationActive: any): void {

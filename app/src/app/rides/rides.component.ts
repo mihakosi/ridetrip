@@ -53,16 +53,19 @@ export class RidesComponent implements OnInit {
     L.marker([this.search.startLatitude, this.search.startLongitude], { icon: redPin }).addTo(map);
     L.marker([this.search.endLatitude, this.search.endLongitude], { icon: greenPin }).addTo(map);
 
-    // Routing: turned off to minimize number of requests
-    // L.Routing.control({
-    //   waypoints: [L.latLng(46.658, 16.161), L.latLng(46.579, 15.649), L.latLng(46.057, 14.506)],
-    //   lineOptions: {
-    //     addWaypoints: false,
-    //   },
-    //   createMarker: function () {
-    //     return null;
-    //   },
-    // }).addTo(map);
+    // Routing
+    L.Routing.control({
+      waypoints: [
+        L.latLng(this.search.startLatitude, this.search.startLongitude),
+        L.latLng(this.search.endLatitude, this.search.endLongitude),
+      ],
+      lineOptions: {
+        addWaypoints: false,
+      },
+      createMarker: function () {
+        return null;
+      },
+    }).addTo(map);
   }
 
   getRides(): void {

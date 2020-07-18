@@ -1,6 +1,5 @@
 const Sequelize = require("sequelize");
 const { sequelize, Offer, Reservation, RouteReservation, Route } = require("../models/db");
-const offers = require("./offers");
 
 // Get all reservations
 const getReservations = (req, res) => {
@@ -363,6 +362,46 @@ const cancelReservation = (req, res) => {
   }
 };
 
+// Get driver's location for a reservation with the given ID
+const getLocation = (req, res) => {
+  Offer.findOne({
+    attributes: ["latitude", "longitude"],
+    include: {
+      model: Route,
+      as: "routes",
+      attributes: [],
+      include: {
+        model: Reservation,
+        as: "reservations",
+        attributes: [],
+        through: {
+          model: RouteReservation,
+          as: "routeReservations",
+          attributes: [],
+        },
+        where: {
+          id: req.params.id,
+          userId: req.payload.id,
+        },
+      },
+    },
+  })
+    .then((location) => {
+      if (location) {
+        return res.status(200).json(location);
+      } else {
+        return res.status(404).json({
+          message: "Podatki o lokaciji voznika niso na voljo.",
+        });
+      }
+    })
+    .catch((error) => {
+      return res.status(500).json({
+        message: "Nekaj je šlo narobe. Prosimo, poskusi znova.",
+      });
+    });
+};
+
 // Update passenger's location for a reservation with the given ID
 const shareLocation = (req, res) => {
   if (!req.body.latitude || !req.body.longitude) {
@@ -430,5 +469,6 @@ module.exports = {
   getReservation,
   createReservation,
   cancelReservation,
+  getLocation,
   shareLocation,
 };

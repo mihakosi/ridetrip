@@ -18,6 +18,7 @@ router.get("/offers", authentication, offersController.getOffers);
 router.get("/offers/:id", authentication, offersController.getOffer);
 router.post("/offers", authentication, offersController.createOffer);
 router.put("/offers/:id/cancel", authentication, offersController.cancelOffer);
+router.get("/offers/:id/location", authentication, offersController.getLocation);
 router.put("/offers/:id/location", authentication, offersController.shareLocation);
 
 /* Rides */
@@ -29,6 +30,7 @@ router.get("/reservations", authentication, reservationsController.getReservatio
 router.get("/reservations/:id", authentication, reservationsController.getReservation);
 router.post("/reservations", authentication, reservationsController.createReservation);
 router.put("/reservations/:id/cancel", authentication, reservationsController.cancelReservation);
+router.get("/reservations/:id/location", authentication, reservationsController.getLocation);
 router.put("/reservations/:id/location", authentication, reservationsController.shareLocation);
 
 /* Vehicles */

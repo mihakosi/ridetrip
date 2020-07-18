@@ -280,6 +280,46 @@ const cancelOffer = (req, res) => {
   }
 };
 
+// Get passengers' locations for an offer with the given ID
+const getLocation = (req, res) => {
+  Reservation.findAll({
+    attributes: ["id", "latitude", "longitude"],
+    include: {
+      model: Route,
+      as: "routes",
+      attributes: [],
+      through: {
+        model: RouteReservation,
+        as: "routeReservations",
+        attributes: [],
+      },
+      include: {
+        model: Offer,
+        as: "offer",
+        attributes: [],
+      },
+    },
+    where: {
+      "$routes->offer.id$": req.params.id,
+      "$routes->offer.driverId$": req.payload.id,
+    },
+  })
+    .then((locations) => {
+      if (locations) {
+        return res.status(200).json(locations);
+      } else {
+        return res.status(404).json({
+          message: "Podatki o lokacijah potnikov niso na voljo.",
+        });
+      }
+    })
+    .catch((error) => {
+      return res.status(500).json({
+        message: "Nekaj je šlo narobe. Prosimo, poskusi znova.",
+      });
+    });
+};
+
 // Update driver's location for an offer with the given ID
 const shareLocation = (req, res) => {
   if (!req.body.latitude || !req.body.longitude) {
@@ -346,5 +386,6 @@ module.exports = {
   getOffer,
   createOffer,
   cancelOffer,
+  getLocation,
   shareLocation,
 };

@@ -73,6 +73,21 @@ export class ReservationsService {
       .catch(this.handleError);
   }
 
+  public getLocation(reservation: any): Promise<any> {
+    const url: string = `${this.apiUrl}/reservations/${reservation.id}/location`;
+    const httpHeaders = {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${this.storage.getItem("token")}`,
+      }),
+    };
+
+    return this.http
+      .get(url, httpHeaders)
+      .toPromise()
+      .then((result) => result as any)
+      .catch(this.handleError);
+  }
+
   public shareLocation(reservation: any, location: any): Promise<any> {
     const url: string = `${this.apiUrl}/reservations/${reservation.id}/location`;
     const httpHeaders = {

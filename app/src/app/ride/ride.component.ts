@@ -76,16 +76,16 @@ export class RideComponent implements OnInit {
       L.latLng(this.ride.routes[this.ride.routes.length - 1].endLatitude, this.ride.routes[this.ride.routes.length - 1].endLongitude)
     );
 
-    // Routing: turned off to minimize number of requests
-    // L.Routing.control({
-    //   waypoints: waypoints,
-    //   lineOptions: {
-    //     addWaypoints: false,
-    //   },
-    //   createMarker: function () {
-    //     return null;
-    //   },
-    // }).addTo(map);
+    // Routing
+    L.Routing.control({
+      waypoints: waypoints,
+      lineOptions: {
+        addWaypoints: false,
+      },
+      createMarker: function () {
+        return null;
+      },
+    }).addTo(map);
   }
 
   createReservation(): void {
