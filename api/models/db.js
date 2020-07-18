@@ -48,17 +48,31 @@ User.hasMany(Vehicle, { as: "vehicles", foreignKey: "ownerId" });
 Vehicle.belongsTo(User, { as: "owner" });
 Vehicle.hasMany(Offer, { as: "offers", foreignKey: "vehicleId" });
 
+let models = {
+  Offer: Offer,
+  Reservation: Reservation,
+  RouteReservation: RouteReservation,
+  Route: Route,
+  User: User,
+  Vehicle: Vehicle,
+};
+
+let syncOptions = {};
+if (process.env.NODE_ENV === "development") {
+  syncOptions.force = true;
+}
+
 /* Set up extensions */
 sequelize.query(`CREATE EXTENSION IF NOT EXISTS cube`).then(() => {
   sequelize.query(`CREATE EXTENSION IF NOT EXISTS earthdistance`).then(() => {
     /* Sync */
     sequelize
-      .sync(/*{ force: true }*/)
+      .sync(syncOptions)
       .then(() => {
         console.log("Tables created.");
 
         if (process.env.NODE_ENV === "development") {
-          fillDatabase()
+          fillDatabase(models)
             .then(() => {
               console.log("Test data inserted.");
             })
@@ -74,96 +88,183 @@ sequelize.query(`CREATE EXTENSION IF NOT EXISTS cube`).then(() => {
 });
 
 /* Fill database with dummy data */
-const fillDatabase = async () => {
+const fillDatabase = async (models) => {
   /* Users */
-  await sequelize.query(`INSERT INTO "users" ("id", "firstName", "lastName", "email", "password", "image")
-    SELECT * FROM (
-      SELECT
-        1, 'Janez', 'Horvat', 'janez@horvat.com', '$2b$10$upH6WHm0Z9ZqdhBDytQsIOz6iNHZg00OJtwL9aB9T/EPeEX6.UgSq', null
-      UNION
-      SELECT
-        2, 'Jana', 'Gal', 'jana@gal.com', '$2b$10$pFdxVH80/ZmC/zODh1cp7ewYA1xhSec0EgfcHCQYNixN5WHSueUIG', null
-      UNION
-      SELECT
-        3, 'Lea', 'Jiménez', 'lea@jimenez.com', '$2b$10$bD/sRHZSFF5YFcHGz0vugucarWEZ0fQMw8aLqqKh6rRI9iWeGw70m', null
-      UNION
-      SELECT
-        4, 'Gregor', 'Zupan', 'gregor@zupan.com', '$2b$10$G8MxgwPWZcimkYtioVqmTOyoJAxiTpuL.J2LcU6EyiXANBVInKmnu', null
-    ) AS x
-    WHERE NOT EXISTS (SELECT * FROM "users")`);
+  await models.User.create({
+    firstName: "Janez",
+    lastName: "Horvat",
+    email: "janez@horvat.com",
+    password: "$2b$10$upH6WHm0Z9ZqdhBDytQsIOz6iNHZg00OJtwL9aB9T/EPeEX6.UgSq",
+  });
+
+  await models.User.create({
+    firstName: "Jana",
+    lastName: "Gal",
+    email: "jana@gal.com",
+    password: "$2b$10$pFdxVH80/ZmC/zODh1cp7ewYA1xhSec0EgfcHCQYNixN5WHSueUIG",
+  });
+
+  await models.User.create({
+    firstName: "Lea",
+    lastName: "Jiménez",
+    email: "lea@jimenez.com",
+    password: "$2b$10$bD/sRHZSFF5YFcHGz0vugucarWEZ0fQMw8aLqqKh6rRI9iWeGw70m",
+  });
+
+  await models.User.create({
+    firstName: "Geogor",
+    lastName: "Zupan",
+    email: "gregor@zupan.com",
+    password: "$2b$10$G8MxgwPWZcimkYtioVqmTOyoJAxiTpuL.J2LcU6EyiXANBVInKmnu",
+  });
 
   /* Vehicles */
-  await sequelize.query(`INSERT INTO "vehicles" ("id", "model", "licencePlate", "passengers", "baggage", "ownerId")
-    SELECT * FROM (
-      SELECT
-        1, 'Renault Clio', 'MB DT 539', 4, 2, 1
-      UNION
-      SELECT
-        2, 'Audi A3', 'LJ CDN 85', 4, 3, 2
-    ) AS x
-    WHERE NOT EXISTS (SELECT * FROM "vehicles")`);
+  await models.Vehicle.create({
+    model: "Renault Clio",
+    licencePlate: "MB DT 539",
+    passengers: 4,
+    baggage: 2,
+    ownerId: 1,
+  });
+
+  await models.Vehicle.create({
+    model: "Audi A3",
+    licencePlate: "LJ CDN 85",
+    passengers: 4,
+    baggage: 3,
+    ownerId: 2,
+  });
 
   /* Offers */
-  await sequelize.query(`INSERT INTO "offers" ("id", "passengers", "baggage", "description", "active", "cancellationReason", "driverId", "vehicleId")
-    SELECT * FROM (
-      SELECT
-        1, 3, 2, 'Prostor za eno osebo spredaj in dve zadaj. Prosim za zmerno količino prtljage po osebi. Odhod bo maksimalno 5 minut po določenem času, zato prosim, da ste točni.', TRUE, NULL, 1, 1
-      UNION
-      SELECT
-        2, 3, 2, '', FALSE, 'Zaradi nujnih obveznosti moram iz Portoroža oditi nekaj dni prej. Opravičujem se za nevšečnosti.', 1, 1
-      UNION
-      SELECT
-        3, 2, 2, 'Prostor samo na zadnjih sedežih. Prevoz je praviloma brez postanka.', TRUE, NULL, 2, 2
-    ) AS x
-    WHERE NOT EXISTS (SELECT * FROM "offers")`);
+  await models.Offer.create({
+    passengers: 3,
+    baggage: 2,
+    description:
+      "Prostor za eno osebo spredaj in dve zadaj. Prosim za zmerno količino prtljage po osebi. Odhod bo maksimalno 5 minut po določenem času, zato prosim, da ste točni.",
+    active: true,
+    driverId: 1,
+    vehicleId: 1,
+  });
+
+  await models.Offer.create({
+    passengers: 3,
+    baggage: 2,
+    description: "",
+    active: false,
+    cancellationReason: "Zaradi nujnih obveznosti moram iz Portoroža oditi nekaj dni prej. Opravičujem se za nevšečnosti.",
+    driverId: 1,
+    vehicleId: 1,
+  });
+
+  await models.Offer.create({
+    passengers: 2,
+    baggage: 2,
+    description: "Prostor samo na zadnjih sedežih. Prevoz je praviloma brez postanka.",
+    active: true,
+    driverId: 2,
+    vehicleId: 2,
+  });
 
   /* Routes */
-  await sequelize.query(`INSERT INTO "routes" ("id", "start", "startSimple", "startLatitude", "startLongitude", "end", "endSimple", "endLatitude", "endLongitude", "departure", "price", "offerId")
-    SELECT * FROM (
-      SELECT
-        1, 'Avtobusna postaja Maribor, Mlinska ulica, Center, Maribor, 2000, Slovenija', 'Maribor', 46.5596386, 15.6554157, 'Kristalna palača, 8, Ameriška ulica, BTC, Nove Jarše, Ljubljana, Upravna Enota Ljubljana, 1000, Slovenija', 'Ljubljana', 46.066573, 14.541559309498947, to_timestamp(1595656800), 5, 1
-      UNION
-      SELECT
-        2, 'Kristalna palača, 8, Ameriška ulica, BTC, Nove Jarše, Ljubljana, Upravna Enota Ljubljana, 1000, Slovenija', 'Ljubljana', 46.066573, 14.541559309498947, 'Grand Hotel Portorož, 43, Obala, Fazan, Piran, Upravna enota Piran, 6320, Slovenija', 'Piran', 45.514533650000004, 13.590123, to_timestamp(1595671200), 10, 1
-      UNION
-      SELECT
-        3, 'Grand Hotel Portorož, 43, Obala, Fazan, Piran, Upravna enota Piran, 6320, Slovenija', 'Piran', 45.514533650000004, 13.590123, 'Avtobusna postaja Maribor, Mlinska ulica, Center, Maribor, 2000, Slovenija', 'Maribor', 46.5596386, 15.6554157, to_timestamp(1596276000), 15, 2
-      UNION
-      SELECT
-        4, 'Avtobusna postaja Ljubljana, Trg Osvobodilne fronte, Zupančičeva jama, Bežigrad, Ljubljana, Upravna Enota Ljubljana, 1000, Slovenija', 'Ljubljana', 46.057711, 14.5095422, 'Bernardin, Upravna enota Piran, 6330, Slovenija', 'Bernardin', 45.5153671, 13.571838, to_timestamp(1595656800), 16, 3
-      ) AS x
-    WHERE NOT EXISTS (SELECT * FROM "routes")`);
+  await models.Route.create({
+    start: "Avtobusna postaja Maribor, Mlinska ulica, Center, Maribor, 2000, Slovenija",
+    startSimple: "Maribor",
+    startLatitude: 46.5596386,
+    startLongitude: 15.6554157,
+    end: "Kristalna palača, 8, Ameriška ulica, BTC, Nove Jarše, Ljubljana, Upravna Enota Ljubljana, 1000, Slovenija",
+    endSimple: "Ljubljana",
+    endLatitude: 46.066573,
+    endLongitude: 14.541559309498947,
+    departure: new Date(0).setUTCSeconds(1595656800),
+    price: 5,
+    offerId: 1,
+  });
+
+  await models.Route.create({
+    start: "Kristalna palača, 8, Ameriška ulica, BTC, Nove Jarše, Ljubljana, Upravna Enota Ljubljana, 1000, Slovenija",
+    startSimple: "Ljubljana",
+    startLatitude: 46.066573,
+    startLongitude: 14.541559309498947,
+    end: "Grand Hotel Portorož, 43, Obala, Fazan, Piran, Upravna enota Piran, 6320, Slovenija",
+    endSimple: "Piran",
+    endLatitude: 45.514533650000004,
+    endLongitude: 13.590123,
+    departure: new Date(0).setUTCSeconds(1595671200),
+    price: 10,
+    offerId: 1,
+  });
+
+  await models.Route.create({
+    start: "Grand Hotel Portorož, 43, Obala, Fazan, Piran, Upravna enota Piran, 6320, Slovenija",
+    startSimple: "Piran",
+    startLatitude: 45.514533650000004,
+    startLongitude: 13.590123,
+    end: "Avtobusna postaja Maribor, Mlinska ulica, Center, Maribor, 2000, Slovenija",
+    endSimple: "Maribor",
+    endLatitude: 46.5596386,
+    endLongitude: 15.6554157,
+    departure: new Date(0).setUTCSeconds(1596276000),
+    price: 15,
+    offerId: 2,
+  });
+
+  await models.Route.create({
+    start:
+      "Avtobusna postaja Ljubljana, Trg Osvobodilne fronte, Zupančičeva jama, Bežigrad, Ljubljana, Upravna Enota Ljubljana, 1000, Slovenija",
+    startSimple: "Ljubljana",
+    startLatitude: 46.057711,
+    startLongitude: 14.5095422,
+    end: "Bernardin, Upravna enota Piran, 6330, Slovenija",
+    endSimple: "Bernardin",
+    endLatitude: 45.5153671,
+    endLongitude: 13.571838,
+    departure: new Date(0).setUTCSeconds(1595656800),
+    price: 16,
+    offerId: 3,
+  });
 
   /* Reservations */
-  await sequelize.query(`INSERT INTO "reservations" ("id", "passengers", "baggage", "active", "cancellationReason", "userId")
-    SELECT * FROM (
-      SELECT
-        1, 1, 1, TRUE, NULL, 3
-      UNION
-      SELECT
-        2, 1, 1, TRUE, NULL, 4
-      UNION
-      SELECT
-        3, 1, 1, TRUE, NULL, 4
-    ) AS x
-    WHERE NOT EXISTS (SELECT * FROM "reservations")`);
+  await models.Reservation.create({
+    passengers: 1,
+    baggage: 1,
+    active: true,
+    userId: 3,
+  });
 
-  /* RouteReservations */
-  await sequelize.query(`INSERT INTO "routeReservations" ("reservationId", "routeId")
-    SELECT * FROM (
-      SELECT
-        1, 2
-      UNION
-      SELECT
-        2, 1
-      UNION
-      SELECT
-        2, 2
-      UNION
-      SELECT
-        3, 3
-    ) AS x
-    WHERE NOT EXISTS (SELECT * FROM "routeReservations")`);
+  await models.Reservation.create({
+    passengers: 1,
+    baggage: 1,
+    active: true,
+    userId: 4,
+  });
+
+  await models.Reservation.create({
+    passengers: 1,
+    baggage: 1,
+    active: true,
+    userId: 4,
+  });
+
+  /* Route reservations */
+  await models.RouteReservation.create({
+    reservationId: 1,
+    routeId: 2,
+  });
+
+  await models.RouteReservation.create({
+    reservationId: 2,
+    routeId: 1,
+  });
+
+  await models.RouteReservation.create({
+    reservationId: 2,
+    routeId: 2,
+  });
+
+  await models.RouteReservation.create({
+    reservationId: 3,
+    routeId: 3,
+  });
 };
 
 module.exports = {
