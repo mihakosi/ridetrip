@@ -103,6 +103,21 @@ export class ReservationsService {
       .catch(this.handleError);
   }
 
+  public getDriver(reservation: any): Promise<any> {
+    const url: string = `${this.apiUrl}/reservations/${reservation.id}/driver`;
+    const httpHeaders = {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${this.storage.getItem("token")}`,
+      }),
+    };
+
+    return this.http
+      .get(url, httpHeaders)
+      .toPromise()
+      .then((result) => result as any)
+      .catch(this.handleError);
+  }
+
   private handleError(error: any): Promise<any> {
     return Promise.reject(error.error.message || "Podatkov ni mogoče pridobiti.");
   }

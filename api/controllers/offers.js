@@ -381,6 +381,54 @@ const shareLocation = (req, res) => {
   }
 };
 
+// Get all passengers for an offer with the given ID
+const getPassengers = (req, res) => {
+  Reservation.findAll({
+    attributes: ["id"],
+    include: [
+      {
+        model: Route,
+        as: "routes",
+        attributes: [],
+        through: {
+          model: RouteReservation,
+          as: "routeReservations",
+          attributes: [],
+        },
+        include: {
+          model: Offer,
+          as: "offer",
+          attributes: [],
+        },
+      },
+      {
+        model: User,
+        as: "user",
+        attributes: ["firstName", "lastName", "image"],
+      },
+    ],
+    where: {
+      "$routes->offer.id$": req.params.id,
+      "$routes->offer.driverId$": req.payload.id,
+      [Sequelize.Op.or]: [{ driverRated: false }, { driverRated: null }],
+    },
+  })
+    .then((passengers) => {
+      if (passengers) {
+        return res.status(200).json(passengers);
+      } else {
+        return res.status(404).json({
+          message: "Seznam potnikov ni na voljo.",
+        });
+      }
+    })
+    .catch((error) => {
+      return res.status(500).json({
+        message: "Nekaj je šlo narobe. Prosimo, poskusi znova.",
+      });
+    });
+};
+
 module.exports = {
   getOffers,
   getOffer,
@@ -388,4 +436,5 @@ module.exports = {
   cancelOffer,
   getLocation,
   shareLocation,
+  getPassengers,
 };

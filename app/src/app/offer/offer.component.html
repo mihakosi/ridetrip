@@ -14,6 +14,29 @@
 <div id="map" class="map-small" *ngIf="error.type != 'data'"></div>
 <ng-container *ngIf="offer">
   <div class="container my-3">
+    <ng-container *ngIf="offer.active && passengers">
+      <div class="row pt-2" *ngIf="passengers">
+        <ng-container *ngFor="let passenger of passengers">
+          <div class="col-md-6">
+            <div class="mb-1">
+              <img
+                src="{{ passenger.user.image ? passenger.user.image : '/assets/images/user.png' }}"
+                class="user-avatar rounded-circle mr-2"
+              />
+              {{ passenger.user.firstName }} {{ passenger.user.lastName }}
+            </div>
+            <div class="form-group text-center">
+              <label>S potnikom/potnico sem bil/a zadovoljen/zadovoljna.</label>
+              <div class="rating text-secondary">
+                <i class="far fa-frown mr-3" (click)="createRating(passenger.id, 1)"></i>
+                <i class="far fa-meh mr-3" (click)="createRating(passenger.id, 2)"></i>
+                <i class="far fa-smile" (click)="createRating(passenger.id, 3)"></i>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </ng-container>
     <ng-container *ngIf="!offer.active">
       <div class="alert alert-warning">
         <p class="m-0">Prevoz je preklican.</p>

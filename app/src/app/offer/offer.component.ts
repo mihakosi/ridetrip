@@ -6,6 +6,7 @@ import "leaflet-routing-machine";
 
 import { ErrorService } from "../error.service";
 import { OffersService } from "../offers.service";
+import { RatingsService } from "../ratings.service";
 import { ReservationsService } from "../reservations.service";
 
 @Component({
@@ -17,11 +18,14 @@ export class OfferComponent implements OnInit {
   constructor(
     private errorService: ErrorService,
     private offersService: OffersService,
+    private ratingsService: RatingsService,
     private reservationsService: ReservationsService,
     private path: ActivatedRoute
   ) {}
 
   public offer: any;
+
+  public passengers: any[];
 
   public error = {
     type: "",
@@ -168,7 +172,7 @@ export class OfferComponent implements OnInit {
           });
         })
         .catch((error) => {
-          this.errorService.onGetError.emit({ message: "Lokacij potnikov ni mogoče pridobiti.", type: "danger" });
+          this.errorService.onGetError.emit({ message: error, type: "danger" });
         });
     }, 5000);
   }
@@ -178,6 +182,30 @@ export class OfferComponent implements OnInit {
 
     navigator.geolocation.clearWatch(this.watchPosition);
     clearInterval(this.locationInterval);
+  }
+
+  createRating(reservation: number, rating: number): void {
+    this.ratingsService
+      .createRating({
+        role: 0,
+        rating: rating,
+        reservation: reservation,
+      })
+      .then((rating) => {
+        this.offersService
+          .getPassengers(this.offer)
+          .then((passengers) => {
+            this.passengers = passengers;
+          })
+          .catch((error) => {
+            this.errorService.onGetError.emit({ message: error, type: "danger" });
+          });
+
+        this.errorService.onGetError.emit({ message: "Ocena uspešno oddana.", type: "success" });
+      })
+      .catch((error) => {
+        this.errorService.onGetError.emit({ message: error, type: "danger" });
+      });
   }
 
   cancelReservation(reservationActive: any): void {
@@ -241,6 +269,17 @@ export class OfferComponent implements OnInit {
 
           let today = new Date();
           this.cancellable = (new Date(offer.routes[0].departure).getTime() - today.getTime()) / (60 * 60 * 1000) >= 8;
+
+          if ((today.getTime() - new Date(offer.routes[offer.routes.length - 1].departure).getTime()) / (60 * 60 * 1000) >= 24) {
+            this.offersService
+              .getPassengers(offer)
+              .then((passengers) => {
+                this.passengers = passengers;
+              })
+              .catch((error) => {
+                this.errorService.onGetError.emit({ message: error, type: "danger" });
+              });
+          }
         },
         (error) => {
           this.error.type = "data";

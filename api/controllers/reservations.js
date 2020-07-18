@@ -464,6 +464,48 @@ const shareLocation = (req, res) => {
   }
 };
 
+// Get driver for a reservation with the given ID
+const getDriver = (req, res) => {
+  Offer.findOne({
+    attributes: ["id"],
+    include: [
+      {
+        model: Route,
+        as: "routes",
+        attributes: [],
+        include: {
+          model: Reservation,
+          as: "reservations",
+          attributes: [],
+          through: {
+            model: RouteReservation,
+            as: "routeReservations",
+            attributes: [],
+          },
+          where: {
+            id: req.params.id,
+            userId: req.payload.id,
+            [Sequelize.Op.or]: [{ passengerRated: false }, { passengerRated: null }],
+          },
+        },
+      },
+      {
+        model: User,
+        as: "driver",
+        attributes: ["firstName", "lastName", "image"],
+      },
+    ],
+  })
+    .then((driver) => {
+      return res.status(200).json(driver);
+    })
+    .catch((error) => {
+      return res.status(500).json({
+        message: "Nekaj je šlo narobe. Prosimo, poskusi znova.",
+      });
+    });
+};
+
 module.exports = {
   getReservations,
   getReservation,
@@ -471,4 +513,5 @@ module.exports = {
   cancelReservation,
   getLocation,
   shareLocation,
+  getDriver,
 };

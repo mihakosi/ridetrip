@@ -28,11 +28,14 @@ RouteReservation = sequelize.import("./routeReservations");
 Route = sequelize.import("./routes");
 User = sequelize.import("./users");
 Vehicle = sequelize.import("./vehicles");
+Rating = sequelize.import("./ratings");
 
 /* Relationships */
 Offer.belongsTo(User, { as: "driver" });
 Offer.belongsTo(Vehicle, { as: "vehicle" });
 Offer.hasMany(Route, { as: "routes", foreignKey: "offerId" });
+
+Rating.belongsTo(User, { as: "user" });
 
 Reservation.belongsTo(User, { as: "user" });
 
@@ -44,12 +47,14 @@ Route.belongsTo(Offer, { as: "offer" });
 User.hasMany(Offer, { as: "offers", foreignKey: "driverId" });
 User.hasMany(Reservation, { as: "reservations", foreignKey: "userId" });
 User.hasMany(Vehicle, { as: "vehicles", foreignKey: "ownerId" });
+User.hasMany(Rating, { as: "ratings", foreignKey: "userId" });
 
 Vehicle.belongsTo(User, { as: "owner" });
 Vehicle.hasMany(Offer, { as: "offers", foreignKey: "vehicleId" });
 
 let models = {
   Offer: Offer,
+  Rating: Rating,
   Reservation: Reservation,
   RouteReservation: RouteReservation,
   Route: Route,
@@ -270,6 +275,7 @@ const fillDatabase = async (models) => {
 module.exports = {
   sequelize,
   Offer,
+  Rating,
   Reservation,
   RouteReservation,
   Route,

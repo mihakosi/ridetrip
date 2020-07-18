@@ -5,6 +5,7 @@ import L from "leaflet";
 import "leaflet-routing-machine";
 
 import { ErrorService } from "../error.service";
+import { RatingsService } from "../ratings.service";
 import { ReservationsService } from "../reservations.service";
 
 @Component({
@@ -13,9 +14,16 @@ import { ReservationsService } from "../reservations.service";
   styleUrls: ["./reservation.component.css"],
 })
 export class ReservationComponent implements OnInit {
-  constructor(private errorService: ErrorService, private reservationsService: ReservationsService, private path: ActivatedRoute) {}
+  constructor(
+    private errorService: ErrorService,
+    private ratingsService: RatingsService,
+    private reservationsService: ReservationsService,
+    private path: ActivatedRoute
+  ) {}
 
   public reservation: any;
+
+  public driver: any;
 
   public error = {
     type: "",
@@ -144,7 +152,7 @@ export class ReservationComponent implements OnInit {
           });
       },
       (error) => {
-        this.errorService.onGetError.emit({ message: "Lokacije ni mogoče pridobiti.", type: "danger" });
+        this.errorService.onGetError.emit({ message: error, type: "danger" });
       },
       {
         enableHighAccuracy: false,
@@ -172,6 +180,22 @@ export class ReservationComponent implements OnInit {
 
     navigator.geolocation.clearWatch(this.watchPosition);
     clearInterval(this.locationInterval);
+  }
+
+  createRating(reservation: number, rating: number): void {
+    this.ratingsService
+      .createRating({
+        role: 1,
+        rating: rating,
+        reservation: reservation,
+      })
+      .then((rating) => {
+        this.driver = null;
+        this.errorService.onGetError.emit({ message: "Ocena uspešno oddana.", type: "success" });
+      })
+      .catch((error) => {
+        this.errorService.onGetError.emit({ message: error, type: "danger" });
+      });
   }
 
   cancelReservation(): void {
@@ -210,6 +234,20 @@ export class ReservationComponent implements OnInit {
 
           let today = new Date();
           this.cancellable = (new Date(reservation.routes[0].departure).getTime() - today.getTime()) / (60 * 60 * 1000) >= 8;
+
+          if (
+            (today.getTime() - new Date(reservation.routes[reservation.routes.length - 1].departure).getTime()) / (60 * 60 * 1000) >=
+            24
+          ) {
+            this.reservationsService
+              .getDriver(reservation)
+              .then((driver) => {
+                this.driver = driver;
+              })
+              .catch((error) => {
+                this.errorService.onGetError.emit({ message: error, type: "danger" });
+              });
+          }
         },
         (error) => {
           this.error.type = "data";

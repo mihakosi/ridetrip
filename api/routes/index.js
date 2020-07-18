@@ -8,6 +8,7 @@ var authentication = jwt({
 });
 
 const offersController = require("../controllers/offers");
+const ratingsController = require("../controllers/ratings");
 const ridesController = require("../controllers/rides");
 const reservationsController = require("../controllers/reservations");
 const vehiclesController = require("../controllers/vehicles");
@@ -20,6 +21,10 @@ router.post("/offers", authentication, offersController.createOffer);
 router.put("/offers/:id/cancel", authentication, offersController.cancelOffer);
 router.get("/offers/:id/location", authentication, offersController.getLocation);
 router.put("/offers/:id/location", authentication, offersController.shareLocation);
+router.get("/offers/:id/passengers", authentication, offersController.getPassengers);
+
+/* Ratings */
+router.post("/ratings", authentication, ratingsController.createRating);
 
 /* Rides */
 router.get("/rides", authentication, ridesController.getRides);
@@ -32,6 +37,7 @@ router.post("/reservations", authentication, reservationsController.createReserv
 router.put("/reservations/:id/cancel", authentication, reservationsController.cancelReservation);
 router.get("/reservations/:id/location", authentication, reservationsController.getLocation);
 router.put("/reservations/:id/location", authentication, reservationsController.shareLocation);
+router.get("/reservations/:id/driver", authentication, reservationsController.getDriver);
 
 /* Vehicles */
 router.get("/vehicles", authentication, vehiclesController.getVehicles);

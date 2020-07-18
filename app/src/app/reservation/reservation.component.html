@@ -56,6 +56,20 @@
         <p class="mb-0 badge badge-light registration-plate ml-2">{{ reservation.routes[0].offer.vehicle.licencePlate }}</p>
       </div>
     </div>
+    <ng-container *ngIf="reservation.active && driver">
+      <div class="row justify-content-center pt-2">
+        <div class="col-md-6">
+          <div class="form-group text-center">
+            <label>Z voznikom/voznico sem bil/a zadovoljen/zadovoljna.</label>
+            <div class="rating text-secondary">
+              <i class="far fa-frown mr-3" (click)="createRating(reservation.id, 1)"></i>
+              <i class="far fa-meh mr-3" (click)="createRating(reservation.id, 2)"></i>
+              <i class="far fa-smile" (click)="createRating(reservation.id, 3)"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
     <div class="row my-3 py-3 info-panel">
       <div class="col-6">
         <div class="text-center">

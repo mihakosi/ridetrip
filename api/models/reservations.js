@@ -33,6 +33,12 @@ module.exports = function (sequelize, DataTypes) {
       longitude: {
         type: DataTypes.DOUBLE,
       },
+      driverRated: {
+        type: DataTypes.BOOLEAN,
+      },
+      passengerRated: {
+        type: DataTypes.BOOLEAN,
+      },
     },
     {
       timestamps: false,
