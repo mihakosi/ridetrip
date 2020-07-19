@@ -32,8 +32,6 @@ export class OfferComponent implements OnInit {
     message: "",
   };
 
-  public cancellable: boolean;
-
   map: any;
 
   public sharingLocation: boolean = false;
@@ -101,6 +99,20 @@ export class OfferComponent implements OnInit {
         return null;
       },
     }).addTo(this.map);
+  }
+
+  allowOfferCancellation(): boolean {
+    return (new Date(this.offer.routes[0].departure).getTime() - new Date().getTime()) / (60 * 60 * 1000) >= 8;
+  }
+
+  allowReservationCancellation(departure: Date): boolean {
+    return (new Date(departure).getTime() - new Date().getTime()) / (60 * 60 * 1000) >= 8;
+  }
+
+  allowLocationSharing(): boolean {
+    return this.offer.routes.some((route) => {
+      return Math.abs(new Date(route.departure).getTime() - new Date().getTime()) / (60 * 60 * 1000) < 1;
+    });
   }
 
   shareLocation(): void {
@@ -212,7 +224,7 @@ export class OfferComponent implements OnInit {
     this.error.type = "loading";
     this.error.message = "";
 
-    reservationActive.cancellationReason = "Rezervacijo je preklical ponudnik prevoza.";
+    reservationActive.cancellationReason = "Rezervacijo je preklical/a ponudnik/ca prevoza.";
 
     this.reservationsService
       .cancelReservation(reservationActive)
@@ -268,7 +280,6 @@ export class OfferComponent implements OnInit {
           this.initializeMap();
 
           let today = new Date();
-          this.cancellable = (new Date(offer.routes[0].departure).getTime() - today.getTime()) / (60 * 60 * 1000) >= 8;
 
           if ((today.getTime() - new Date(offer.routes[offer.routes.length - 1].departure).getTime()) / (60 * 60 * 1000) >= 24) {
             this.offersService

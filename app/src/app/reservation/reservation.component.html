@@ -129,11 +129,11 @@
     <div class="form-group">
       <p>{{ reservation.routes[0].offer.description }}</p>
     </div>
-    <div class="text-right" *ngIf="reservation.active && !cancellable">
+    <div class="text-right" *ngIf="reservation.active && allowLocationSharing()">
       <button class="btn btn-primary" (click)="shareLocation()" *ngIf="!sharingLocation">Deli lokacijo</button>
       <button class="btn btn-danger" (click)="stopShareLocation()" *ngIf="sharingLocation">Prenehaj deliti lokacijo</button>
     </div>
-    <div class="text-right" *ngIf="reservation.active && reservation.routes[0].offer.active && cancellable">
+    <div class="text-right" *ngIf="reservation.active && reservation.routes[0].offer.active && allowReservationCancellation()">
       <button class="btn btn-danger" data-toggle="modal" data-target="#cancelReservation">Prekliči rezervacijo</button>
     </div>
   </div>

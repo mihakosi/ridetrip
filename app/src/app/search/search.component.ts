@@ -34,6 +34,8 @@ export class SearchComponent implements OnInit {
   };
 
   searchRides(): void {
+    this.search.date = new Date(this.search.year, this.search.month - 1, this.search.day, this.search.hours, this.search.minutes);
+
     if (!this.search.startLatitude || !this.search.startLongitude) {
       this.error.type = "danger";
       this.error.message = "Prosimo, izberi začetno lokacijo.";
@@ -118,5 +120,13 @@ export class SearchComponent implements OnInit {
 
   ngOnInit(): void {
     this.search = this.ridesService.getSearch();
+
+    if (!this.search.date) {
+      this.search.day = null;
+      this.search.month = null;
+      this.search.year = null;
+      this.search.hours = null;
+      this.search.minutes = null;
+    }
   }
 }

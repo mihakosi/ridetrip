@@ -188,11 +188,11 @@ const createReservation = (req, res) => {
     return res.status(400).json({
       message: "Izberi prevoz za rezervacijo.",
     });
-  } else if (!req.body.passengers || req.body.passengers <= 0) {
+  } else if (!req.body.passengers || Math.floor(req.body.passengers) <= 0) {
     return res.status(400).json({
       message: "Izberi ustrezno število potnikov za prevoz.",
     });
-  } else if (req.body.baggage < 0) {
+  } else if (Math.floor(req.body.baggage) < 0) {
     return res.status(400).json({
       message: "Vnešena količina prtljage ni veljavna.",
     });
@@ -250,8 +250,8 @@ const createReservation = (req, res) => {
         if (!notEnoughSpace) {
           Reservation.create({
             userId: req.payload.id,
-            passengers: req.body.passengers,
-            baggage: req.body.baggage,
+            passengers: Math.floor(req.body.passengers),
+            baggage: Math.floor(req.body.baggage),
             active: true,
           })
             .then((reservation) => {

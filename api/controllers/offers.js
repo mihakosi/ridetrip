@@ -135,11 +135,11 @@ const createOffer = (req, res) => {
     return res.status(400).json({
       message: "Dodaš lahko največ en postanek.",
     });
-  } else if (!req.body.passengers || req.body.passengers <= 0) {
+  } else if (!req.body.passengers || Math.floor(req.body.passengers) <= 0) {
     return res.status(400).json({
       message: "Na voljo mora biti prostor za vsaj enega potnika.",
     });
-  } else if (req.body.baggage < 0) {
+  } else if (Math.floor(req.body.baggage) < 0) {
     return res.status(400).json({
       message: "Vnešen prostor za prtljago ni veljaven.",
     });
@@ -174,8 +174,8 @@ const createOffer = (req, res) => {
             Offer.create({
               driverId: req.payload.id,
               vehicleId: req.body.vehicle,
-              passengers: req.body.passengers,
-              baggage: req.body.baggage,
+              passengers: Math.floor(req.body.passengers),
+              baggage: Math.floor(req.body.baggage),
               description: req.body.description,
               active: true,
               latitude: null,

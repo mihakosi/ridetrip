@@ -117,7 +117,7 @@ const fillDatabase = async (models) => {
   });
 
   await models.User.create({
-    firstName: "Geogor",
+    firstName: "Gregor",
     lastName: "Zupan",
     email: "gregor@zupan.com",
     password: "$2b$10$G8MxgwPWZcimkYtioVqmTOyoJAxiTpuL.J2LcU6EyiXANBVInKmnu",

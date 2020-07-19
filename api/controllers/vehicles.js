@@ -46,11 +46,11 @@ const createVehicle = (req, res) => {
     return res.status(400).json({
       message: "Prosimo, vnesi registrsko številko vozila.",
     });
-  } else if (!req.body.passengers || req.body.passengers <= 0) {
+  } else if (!req.body.passengers || Math.floor(req.body.passengers) <= 0) {
     return res.status(400).json({
       message: "Na voljo mora biti prostor za vsaj enega potnika.",
     });
-  } else if (req.body.baggage < 0) {
+  } else if (Math.floor(req.body.baggage) < 0) {
     return res.status(400).json({
       message: "Vnešen prostor za prtljago ni veljaven.",
     });
@@ -58,8 +58,8 @@ const createVehicle = (req, res) => {
     Vehicle.create({
       model: req.body.model,
       licencePlate: req.body.licencePlate,
-      passengers: req.body.passengers,
-      baggage: req.body.baggage,
+      passengers: Math.floor(req.body.passengers),
+      baggage: Math.floor(req.body.baggage),
       ownerId: req.payload.id,
     })
       .then((vehicle) => {
@@ -83,11 +83,11 @@ const updateVehicle = (req, res) => {
     return res.status(400).json({
       message: "Prosimo, vnesi registrsko številko vozila.",
     });
-  } else if (!req.body.passengers || req.body.passengers <= 0) {
+  } else if (!req.body.passengers || Math.floor(req.body.passengers) <= 0) {
     return res.status(400).json({
       message: "Na voljo mora biti prostor za vsaj enega potnika.",
     });
-  } else if (req.body.baggage < 0) {
+  } else if (Math.floor(req.body.baggage) < 0) {
     return res.status(400).json({
       message: "Vnešen prostor za prtljago ni veljaven.",
     });
@@ -99,8 +99,8 @@ const updateVehicle = (req, res) => {
             .update({
               model: req.body.model,
               licencePlate: req.body.licencePlate,
-              passengers: req.body.passengers,
-              baggage: req.body.baggage,
+              passengers: Math.floor(req.body.passengers),
+              baggage: Math.floor(req.body.baggage),
             })
             .then((vehicle) => {
               return res.status(200).json(vehicle);

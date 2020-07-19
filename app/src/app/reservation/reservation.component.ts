@@ -110,6 +110,16 @@ export class ReservationComponent implements OnInit {
     }).addTo(this.map);
   }
 
+  allowReservationCancellation(): boolean {
+    return (new Date(this.reservation.routes[0].departure).getTime() - new Date().getTime()) / (60 * 60 * 1000) >= 8;
+  }
+
+  allowLocationSharing(): boolean {
+    return this.reservation.routes.some((route) => {
+      return Math.abs(new Date(route.departure).getTime() - new Date().getTime()) / (60 * 60 * 1000) < 1;
+    });
+  }
+
   shareLocation(): void {
     this.sharingLocation = true;
 

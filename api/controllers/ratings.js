@@ -19,7 +19,7 @@ const createRating = (req, res) => {
         include: {
           model: Route,
           as: "routes",
-          attributes: [],
+          attributes: ["departure"],
           through: {
             model: RouteReservation,
             as: "routeReservations",
@@ -37,34 +37,44 @@ const createRating = (req, res) => {
         where: {
           id: req.body.reservation,
         },
+        order: [["routes", "departure", "DESC"]],
       })
         .then((reservation) => {
           if (reservation) {
             if (!reservation.driverRated) {
-              Rating.create({
-                role: req.body.role,
-                rating: Math.floor(req.body.rating),
-                userId: reservation.userId,
-              })
-                .then((rating) => {
-                  reservation
-                    .update({
-                      driverRated: true,
-                    })
-                    .then((reservation) => {
-                      return res.status(200).json(rating);
-                    })
-                    .catch((error) => {
-                      return res.status(500).json({
-                        message: "Nekaj je šlo narobe. Prosimo, poskusi znova.",
-                      });
-                    });
+              let departure = reservation.get({ plain: true }).routes[0].departure;
+
+              // Rating can be created 24 hours after the departure from the last stop
+              if ((new Date() - departure) / (60 * 60 * 1000) >= 24) {
+                Rating.create({
+                  role: req.body.role,
+                  rating: Math.floor(req.body.rating),
+                  userId: reservation.userId,
                 })
-                .catch((error) => {
-                  return res.status(500).json({
-                    message: "Nekaj je šlo narobe. Prosimo, poskusi znova.",
+                  .then((rating) => {
+                    reservation
+                      .update({
+                        driverRated: true,
+                      })
+                      .then((reservation) => {
+                        return res.status(200).json(rating);
+                      })
+                      .catch((error) => {
+                        return res.status(500).json({
+                          message: "Nekaj je šlo narobe. Prosimo, poskusi znova.",
+                        });
+                      });
+                  })
+                  .catch((error) => {
+                    return res.status(500).json({
+                      message: "Nekaj je šlo narobe. Prosimo, poskusi znova.",
+                    });
                   });
+              } else {
+                return res.status(400).json({
+                  message: "Oceno lahko oddaš 24 ur po odhodu z zadnjega postanka.",
                 });
+              }
             } else {
               return res.status(400).json({
                 message: "Potnika/co si že ocenil/a.",
@@ -88,7 +98,7 @@ const createRating = (req, res) => {
         include: {
           model: Route,
           as: "routes",
-          attributes: ["id"],
+          attributes: ["departure"],
           through: {
             model: RouteReservation,
             as: "routeReservations",
@@ -104,34 +114,44 @@ const createRating = (req, res) => {
           id: req.body.reservation,
           userId: req.payload.id,
         },
+        order: [["routes", "departure", "DESC"]],
       })
         .then((reservation) => {
           if (reservation) {
             if (!reservation.driverRated) {
-              Rating.create({
-                role: req.body.role,
-                rating: Math.floor(req.body.rating),
-                userId: reservation.get({ plain: true }).routes[0].offer.driverId,
-              })
-                .then((rating) => {
-                  reservation
-                    .update({
-                      passengerRated: true,
-                    })
-                    .then((reservation) => {
-                      return res.status(200).json(rating);
-                    })
-                    .catch((error) => {
-                      return res.status(500).json({
-                        message: "Nekaj je šlo narobe. Prosimo, poskusi znova.",
-                      });
-                    });
+              let departure = reservation.get({ plain: true }).routes[0].departure;
+
+              // Rating can be created 24 hours after the departure from the last stop
+              if ((new Date() - departure) / (60 * 60 * 1000) >= 24) {
+                Rating.create({
+                  role: req.body.role,
+                  rating: Math.floor(req.body.rating),
+                  userId: reservation.get({ plain: true }).routes[0].offer.driverId,
                 })
-                .catch((error) => {
-                  return res.status(500).json({
-                    message: "Nekaj je šlo narobe. Prosimo, poskusi znova.",
+                  .then((rating) => {
+                    reservation
+                      .update({
+                        passengerRated: true,
+                      })
+                      .then((reservation) => {
+                        return res.status(200).json(rating);
+                      })
+                      .catch((error) => {
+                        return res.status(500).json({
+                          message: "Nekaj je šlo narobe. Prosimo, poskusi znova.",
+                        });
+                      });
+                  })
+                  .catch((error) => {
+                    return res.status(500).json({
+                      message: "Nekaj je šlo narobe. Prosimo, poskusi znova.",
+                    });
                   });
+              } else {
+                return res.status(400).json({
+                  message: "Oceno lahko oddaš 24 ur po odhodu z zadnjega postanka.",
                 });
+              }
             } else {
               return res.status(400).json({
                 message: "Voznika/co si že ocenil/a.",

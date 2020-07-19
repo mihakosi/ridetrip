@@ -173,15 +173,15 @@ a {
 }
 
 .rating .fa-frown:hover {
-  color: red;
+  color: #f44336;
 }
 
 .rating .fa-meh:hover {
-  color: orange;
+  color: #ffc107;
 }
 
 .rating .fa-smile:hover {
-  color: green;
+  color: #4caf50;
 }
 
 .main .btn.floating {
@@ -496,6 +496,16 @@ a {
 
 .main .modal.fade.modal-bottom .modal-dialog .modal-content .modal-footer {
   border-top: none;
+}
+
+.main .form-control.date-input {
+  display: inline-block;
+  width: 65px;
+}
+
+.main .form-control.date-input-xl {
+  display: inline-block;
+  width: 90px;
 }
 
 .loader,

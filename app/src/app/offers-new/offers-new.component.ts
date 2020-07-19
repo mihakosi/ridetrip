@@ -57,7 +57,11 @@ export class OffersNewComponent implements OnInit {
         startSimple: "",
         startLatitude: 0.0,
         startLongitude: 0.0,
-        departure: "",
+        day: null,
+        month: null,
+        year: null,
+        hours: null,
+        minutes: null,
         price: 0.0,
       },
     ],
@@ -73,7 +77,11 @@ export class OffersNewComponent implements OnInit {
       startSimple: "",
       startLatitude: 0.0,
       startLongitude: 0.0,
-      departure: "",
+      day: null,
+      month: null,
+      year: null,
+      hours: null,
+      minutes: null,
       price: 0.0,
     });
 
@@ -86,6 +94,13 @@ export class OffersNewComponent implements OnInit {
   removeStop(): void {
     this.offer.stops.splice(-1, 1);
     this.startSearch.splice(-1, 1);
+  }
+
+  selectVehicle(vehicle: any): void {
+    this.offer.vehicle = vehicle.id;
+
+    this.offer.passengers = vehicle.passengers;
+    this.offer.baggage = vehicle.baggage;
   }
 
   getSearch(event): void {
@@ -173,7 +188,13 @@ export class OffersNewComponent implements OnInit {
           endSimple: this.offer.endSimple,
           endLatitude: this.offer.endLatitude,
           endLongitude: this.offer.endLongitude,
-          departure: this.offer.stops[i].departure,
+          departure: new Date(
+            this.offer.stops[i].year,
+            this.offer.stops[i].month - 1,
+            this.offer.stops[i].day,
+            this.offer.stops[i].hours,
+            this.offer.stops[i].minutes
+          ),
           price: this.offer.stops[i].price,
         };
 
@@ -188,7 +209,13 @@ export class OffersNewComponent implements OnInit {
           endSimple: this.offer.stops[i + 1].startSimple,
           endLatitude: this.offer.stops[i + 1].startLatitude,
           endLongitude: this.offer.stops[i + 1].startLongitude,
-          departure: this.offer.stops[i].departure,
+          departure: new Date(
+            this.offer.stops[i].year,
+            this.offer.stops[i].month - 1,
+            this.offer.stops[i].day,
+            this.offer.stops[i].hours,
+            this.offer.stops[i].minutes
+          ),
           price: this.offer.stops[i].price,
         };
 
