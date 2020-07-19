@@ -50,5 +50,6 @@ router.post("/auth/signin", authController.signIn);
 router.post("/auth/signup", authController.signUp);
 router.get("/auth/user", authentication, authController.getUser);
 router.put("/auth/user", authentication, authController.updateUser);
+router.put("/auth/user/image", authentication, authController.updateUserImage);
 
 module.exports = router;

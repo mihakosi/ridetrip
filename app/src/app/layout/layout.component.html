@@ -17,7 +17,7 @@
         <li class="header-item d-lg-none mb-2">
           <div class="row align-items-center mb-3">
             <div class="col-auto pr-0">
-              <img src="/assets/images/user.png" class="user-avatar-large rounded-circle" />
+              <img src="{{ getUser().image ? getUser().image : '/assets/images/user.png' }}" class="user-avatar-large rounded-circle" />
             </div>
             <div class="col text-ellipsis">
               <p class="mb-1 text-ellipsis">{{ getUser().firstName }} {{ getUser().lastName }}</p>

@@ -11,7 +11,14 @@
     <form (ngSubmit)="updateUser()" role="form">
       <div class="form-group">
         <label for="photo">Slika</label>
-        <div class="mb-2"><img src="{{ user.image ? user.image : '/assets/images/user.png' }}" class="profile-image rounded-circle" /></div>
+        <div class="mb-2">
+          <img
+            src="{{ user.image ? user.image : '/assets/images/user.png' }}"
+            class="profile-image rounded-circle"
+            onClick="document.querySelector('#image').click();"
+          />
+          <input type="file" id="image" (change)="selectImage($event.target.files)" hidden />
+        </div>
         <small class="text-muted">Kliknite na sliko, da izberete novo</small>
       </div>
       <div class="row">

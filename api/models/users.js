@@ -25,8 +25,11 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: false,
       },
       image: {
-        type: DataTypes.STRING,
+        type: DataTypes.BLOB("tiny"),
         allowNull: true,
+        get() {
+          return this.getDataValue("image") ? this.getDataValue("image").toString("ascii") : this.getDataValue("image");
+        },
       },
     },
     {

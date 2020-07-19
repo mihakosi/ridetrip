@@ -17,6 +17,31 @@ export class AccountComponent implements OnInit {
 
   public user: any;
 
+  image: File;
+
+  selectImage(files: FileList): void {
+    this.image = files.item(0);
+
+    const reader = new FileReader();
+    reader.readAsDataURL(this.image);
+    reader.onload = () => {
+      this.authenticationService
+        .updateUserImage({
+          image: reader.result,
+        })
+        .then((image) => {
+          this.user.image = this.authenticationService.returnUser().image;
+
+          this.error.type = "success";
+          this.error.message = "Slika uporabniškega računa uspešno posodobljena.";
+        })
+        .catch((error) => {
+          this.error.type = "danger";
+          this.error.message = error;
+        });
+    };
+  }
+
   updateUser(): void {
     this.error.type = "loading";
     this.error.message = "";

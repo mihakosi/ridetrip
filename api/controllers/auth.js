@@ -160,6 +160,36 @@ const updateUser = (req, res) => {
   }
 };
 
+// Update the image of the authorised user
+const updateUserImage = (req, res) => {
+  User.findOne({ where: { id: req.payload.id } })
+    .then((user) => {
+      if (user) {
+        user
+          .update({
+            image: req.body.image,
+          })
+          .then((user) => {
+            return res.status(200).json({ jwt: generateJWT(user) });
+          })
+          .catch((error) => {
+            return res.status(500).json({
+              message: "Nekaj je šlo narobe. Prosimo, poskusi znova.",
+            });
+          });
+      } else {
+        return res.status(404).json({
+          message: "Uporabnik s tem enoličnim identifikatorjem ne obstaja.",
+        });
+      }
+    })
+    .catch((error) => {
+      return res.status(500).json({
+        message: "Nekaj je šlo narobe. Prosimo, poskusi znova.",
+      });
+    });
+};
+
 const generateJWT = (user) => {
   const expires = new Date();
   expires.setDate(expires.getDate() + 7);
@@ -182,4 +212,5 @@ module.exports = {
   signUp,
   getUser,
   updateUser,
+  updateUserImage,
 };

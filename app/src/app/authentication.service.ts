@@ -72,6 +72,24 @@ export class AuthenticationService {
       .catch(this.handleError);
   }
 
+  public updateUserImage(image: any): Promise<AuthenticationResult> {
+    const url: string = `${this.apiUrl}/auth/user/image`;
+    const httpHeaders = {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${this.storage.getItem("token")}`,
+      }),
+    };
+
+    return this.http
+      .put(url, image, httpHeaders)
+      .toPromise()
+      .then((result) => {
+        this.saveJwt(result["jwt"]);
+        return result as AuthenticationResult;
+      })
+      .catch(this.handleError);
+  }
+
   public signOut(): void {
     this.storage.removeItem("token");
   }
