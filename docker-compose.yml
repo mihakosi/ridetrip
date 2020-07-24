@@ -5,20 +5,17 @@ services:
     depends_on:
       - postgres
     environment:
-      POSTGRES_HOST: postgres
-      POSTGRES_PORT: 5432
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DATABASE: ridetrip
-      POSTGRES_DATABASE_DEFAULT: postgres
+      POSTGRES_CONNECTION_URL: postgres://postgres:postgres@postgres:5432/ridetrip
       JWT_PASSWORD: 74r8ohufgw7y8o
       NODE_ENV: development
       PORT: 3000
     ports:
       - "3000:3000"
+    networks:
+      - ridetrip
     command: npm start
-
   postgres:
+    build: ./db
     image: postgres:12
     ports:
       - "5432:5432"
@@ -26,3 +23,8 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
+    networks:
+      - ridetrip
+networks:
+  ridetrip:
+    driver: bridge

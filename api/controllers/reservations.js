@@ -425,8 +425,12 @@ const shareLocation = (req, res) => {
       .then((reservation) => {
         if (reservation) {
           if (reservation.active) {
-            // Location can be shared at most 1 hour before and after the departure from the start location
-            if (Math.abs(reservation.get({ plain: true }).routes[0].departure - new Date()) / (60 * 60 * 1000) < 1) {
+            // Location can be shared at most 1 hour before and after the departure from any location on route of the reservation
+            let valid = reservation.get({ plain: true }).routes.some((route) => {
+              return Math.abs(route.departure - new Date()) / (60 * 60 * 1000) < 1;
+            });
+
+            if (valid) {
               reservation
                 .update({
                   latitude: req.body.latitude,

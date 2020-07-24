@@ -1,16 +1,13 @@
 const Sequelize = require("sequelize");
 
-const sequelize = new Sequelize(
-  `postgres://${process.env.POSTGRES_USER}:${process.env.POSTGRES_PASSWORD}@${process.env.POSTGRES_HOST}:${process.env.POSTGRES_PORT}/${process.env.POSTGRES_DATABASE}`,
-  {
-    pool: {
-      max: 5,
-      min: 0,
-      acquire: 30000,
-      idle: 10000,
-    },
-  }
-);
+const sequelize = new Sequelize(process.env.POSTGRES_CONNECTION_URL, {
+  pool: {
+    max: 5,
+    min: 0,
+    acquire: 30000,
+    idle: 10000,
+  },
+});
 
 sequelize
   .authenticate()
@@ -65,6 +62,8 @@ let models = {
 let syncOptions = {};
 if (process.env.NODE_ENV === "development") {
   syncOptions.force = true;
+} else {
+  syncOptions.alter = true;
 }
 
 /* Set up extensions */

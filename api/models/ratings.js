@@ -1,5 +1,3 @@
-const { Reservation } = require("./db");
-
 module.exports = function (sequelize, DataTypes) {
   let Rating = sequelize.define(
     "ratings",
