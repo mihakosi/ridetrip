@@ -1,5 +1,5 @@
 const Sequelize = require("sequelize");
-const { sequelize, Offer, Reservation, RouteReservation, Route } = require("../models/db");
+const { sequelize, Offer, Rating, Reservation, RouteReservation, Route } = require("../models/db");
 
 // Get all reservations
 const getReservations = (req, res) => {
@@ -139,7 +139,14 @@ const getReservation = (req, res) => {
               {
                 model: User,
                 as: "driver",
-                attributes: ["id", "firstName", "lastName", "image"],
+                attributes: ["id", "firstName", "lastName", "phone", "image"],
+                include: [
+                  {
+                    model: Rating,
+                    as: "ratings",
+                    attributes: [[sequelize.literal(`COALESCE(AVG("routes->offer->driver->ratings"."rating"), 0)`), "averageRating"]],
+                  },
+                ],
               },
             ],
           },
@@ -155,6 +162,7 @@ const getReservation = (req, res) => {
       "routes->offer->driver.id",
       "routes->routeReservations.reservationId",
       "routes->routeReservations.routeId",
+      "routes->offer->driver->ratings.id",
     ],
     order: [["routes", "departure", "ASC"]],
   })

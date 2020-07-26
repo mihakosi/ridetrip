@@ -26,6 +26,14 @@ import { OfferComponent } from "./offer/offer.component";
 import { AuthenticationGuardService as AuthenticationGuard } from "./authentication-guard.service";
 import { ReservationsHistoryComponent } from "./reservations-history/reservations-history.component";
 import { OffersHistoryComponent } from "./offers-history/offers-history.component";
+import { RecurringManageOffersComponent } from "./recurring-manage-offers/recurring-manage-offers.component";
+import { RecurringManageRidesComponent } from "./recurring-manage-rides/recurring-manage-rides.component";
+import { RecurringManageRidesNewComponent } from "./recurring-manage-rides-new/recurring-manage-rides-new.component";
+import { RecurringManageOffersNewComponent } from "./recurring-manage-offers-new/recurring-manage-offers-new.component";
+import { RecurringManageRideComponent } from "./recurring-manage-ride/recurring-manage-ride.component";
+import { RecurringManageOfferComponent } from "./recurring-manage-offer/recurring-manage-offer.component";
+import { RecurringRidesComponent } from "./recurring-rides/recurring-rides.component";
+import { RecurringOffersComponent } from "./recurring-offers/recurring-offers.component";
 
 @NgModule({
   declarations: [
@@ -48,6 +56,14 @@ import { OffersHistoryComponent } from "./offers-history/offers-history.componen
     OfferComponent,
     ReservationsHistoryComponent,
     OffersHistoryComponent,
+    RecurringManageOffersComponent,
+    RecurringManageRidesComponent,
+    RecurringManageRidesNewComponent,
+    RecurringManageOffersNewComponent,
+    RecurringManageRideComponent,
+    RecurringManageOfferComponent,
+    RecurringRidesComponent,
+    RecurringOffersComponent,
   ],
   imports: [
     BrowserModule,
@@ -99,8 +115,48 @@ import { OffersHistoryComponent } from "./offers-history/offers-history.componen
         canActivate: [AuthenticationGuard],
       },
       {
+        path: "recurring/rides",
+        component: RecurringRidesComponent,
+        canActivate: [AuthenticationGuard],
+      },
+      {
+        path: "recurring/offers",
+        component: RecurringOffersComponent,
+        canActivate: [AuthenticationGuard],
+      },
+      {
         path: "settings",
         component: SettingsComponent,
+        canActivate: [AuthenticationGuard],
+      },
+      {
+        path: "recurring/manage/rides",
+        component: RecurringManageRidesComponent,
+        canActivate: [AuthenticationGuard],
+      },
+      {
+        path: "recurring/manage/rides/new",
+        component: RecurringManageRidesNewComponent,
+        canActivate: [AuthenticationGuard],
+      },
+      {
+        path: "recurring/manage/rides/:id",
+        component: RecurringManageRideComponent,
+        canActivate: [AuthenticationGuard],
+      },
+      {
+        path: "recurring/manage/offers",
+        component: RecurringManageOffersComponent,
+        canActivate: [AuthenticationGuard],
+      },
+      {
+        path: "recurring/manage/offers/new",
+        component: RecurringManageOffersNewComponent,
+        canActivate: [AuthenticationGuard],
+      },
+      {
+        path: "recurring/manage/offers/:id",
+        component: RecurringManageOfferComponent,
         canActivate: [AuthenticationGuard],
       },
       {

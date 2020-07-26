@@ -80,7 +80,18 @@ const getOffer = (req, res) => {
               as: "routeReservations",
               attributes: [],
             },
-            include: [{ model: User, as: "user", attributes: ["id", "firstName", "lastName", "image"] }],
+            include: [
+              {
+                model: User,
+                as: "user",
+                attributes: ["id", "firstName", "lastName", "phone", "image"],
+                include: {
+                  model: Rating,
+                  as: "ratings",
+                  attributes: [[sequelize.literal(`COALESCE(AVG("routes->reservations->user->ratings"."rating"), 0)`), "averageRating"]],
+                },
+              },
+            ],
           },
         ],
       },
@@ -92,7 +103,14 @@ const getOffer = (req, res) => {
     ],
     where: { id: req.params.id, driverId: req.payload.id },
     order: [["routes", "departure", "ASC"]],
-    group: ["offers.id", "routes.id", "routes->reservations.id", "routes->reservations->user.id", "vehicle.id"],
+    group: [
+      "offers.id",
+      "routes.id",
+      "routes->reservations.id",
+      "routes->reservations->user.id",
+      "vehicle.id",
+      "routes->reservations->user->ratings.id",
+    ],
   })
     .then((offer) => {
       if (offer) {
@@ -167,57 +185,80 @@ const createOffer = (req, res) => {
       req.body.baggage = 0;
     }
 
-    Vehicle.findOne({ where: { id: req.body.vehicle, ownerId: req.payload.id } })
-      .then((vehicle) => {
-        if (vehicle) {
-          if (vehicle.passengers >= req.body.passengers && vehicle.baggage >= req.body.baggage) {
-            Offer.create({
-              driverId: req.payload.id,
-              vehicleId: req.body.vehicle,
-              passengers: Math.floor(req.body.passengers),
-              baggage: Math.floor(req.body.baggage),
-              description: req.body.description,
-              active: true,
-              latitude: null,
-              longitude: null,
-            })
-              .then((offer) => {
-                req.body.routes.forEach((element) => {
-                  element["offerId"] = offer.id;
-                });
-
-                Route.bulkCreate(req.body.routes, { returning: true })
-                  .then((routes) => {
-                    return res.status(201).json(offer);
-                  })
-                  .catch((error) => {
-                    return res.status(500).json({
-                      message: "Nekaj je šlo narobe. Prosimo, poskusi znova.",
-                    });
-                  });
-              })
-              .catch((error) => {
-                return res.status(500).json({
-                  message: "Nekaj je šlo narobe. Prosimo, poskusi znova.",
-                });
-              });
+    if (req.body.recurring) {
+      Recurring.findOne({ where: { id: req.body.recurring, userId: req.payload.id, offered: true } })
+        .then((recurring) => {
+          if (recurring) {
+            continueCreateOffer(req, res);
           } else {
-            return res.status(400).json({
-              message: "V vozilu ni dovolj prostora za toliko oseb ali prtljage.",
+            return res.status(404).json({
+              message: "Ponavljajoči prevoz s tem enoličnim identifikatorjem ne obstaja.",
             });
           }
+        })
+        .catch((error) => {
+          return res.status(500).json({
+            message: "Nekaj je šlo narobe. Prosimo, poskusi znova.",
+          });
+        });
+    } else {
+      continueCreateOffer(req, res);
+    }
+  }
+};
+
+const continueCreateOffer = (req, res) => {
+  Vehicle.findOne({ where: { id: req.body.vehicle, ownerId: req.payload.id } })
+    .then((vehicle) => {
+      if (vehicle) {
+        if (vehicle.passengers >= req.body.passengers && vehicle.baggage >= req.body.baggage) {
+          Offer.create({
+            driverId: req.payload.id,
+            recurringId: req.body.recurring,
+            vehicleId: req.body.vehicle,
+            passengers: Math.floor(req.body.passengers),
+            baggage: Math.floor(req.body.baggage),
+            description: req.body.description,
+            active: true,
+            latitude: null,
+            longitude: null,
+          })
+            .then((offer) => {
+              req.body.routes.forEach((element) => {
+                element["offerId"] = offer.id;
+              });
+
+              Route.bulkCreate(req.body.routes, { returning: true })
+                .then((routes) => {
+                  return res.status(201).json(offer);
+                })
+                .catch((error) => {
+                  return res.status(500).json({
+                    message: "Nekaj je šlo narobe. Prosimo, poskusi znova.",
+                  });
+                });
+            })
+            .catch((error) => {
+              return res.status(500).json({
+                message: "Nekaj je šlo narobe. Prosimo, poskusi znova.",
+              });
+            });
         } else {
-          return res.status(404).json({
-            message: "Vozilo s tem enoličnim identifikatorjem ne obstaja.",
+          return res.status(400).json({
+            message: "V vozilu ni dovolj prostora za toliko oseb ali prtljage.",
           });
         }
-      })
-      .catch((error) => {
-        return res.status(500).json({
-          message: "Nekaj je šlo narobe. Prosimo, poskusi znova.",
+      } else {
+        return res.status(404).json({
+          message: "Vozilo s tem enoličnim identifikatorjem ne obstaja.",
         });
+      }
+    })
+    .catch((error) => {
+      return res.status(500).json({
+        message: "Nekaj je šlo narobe. Prosimo, poskusi znova.",
       });
-  }
+    });
 };
 
 // Cancel an offer with the given ID

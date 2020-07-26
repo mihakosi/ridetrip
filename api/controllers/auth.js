@@ -46,6 +46,8 @@ const signUp = (req, res) => {
     res.status(400).json({ message: "Prosimo, da izpolniš vsa polja." });
   } else if (!req.body.email) {
     res.status(400).json({ message: "Prosimo, da izpolniš vsa polja." });
+  } else if (!req.body.phone) {
+    res.status(400).json({ message: "Prosimo, da izpolniš vsa polja." });
   } else if (!req.body.password) {
     res.status(400).json({ message: "Prosimo, da izpolniš vsa polja." });
   } else {
@@ -59,6 +61,7 @@ const signUp = (req, res) => {
                 firstName: req.body.firstName,
                 lastName: req.body.lastName,
                 email: req.body.email,
+                phone: req.body.phone,
                 password: hash,
               })
                 .then((user) => {
@@ -91,7 +94,7 @@ const signUp = (req, res) => {
 
 // Return information about the authorised user
 const getUser = (req, res) => {
-  User.findOne({ attributes: ["firstName", "lastName", "email", "image"], where: { id: req.payload.id } })
+  User.findOne({ attributes: ["firstName", "lastName", "email", "phone", "image"], where: { id: req.payload.id } })
     .then((user) => {
       if (user) {
         return res.status(200).json(user);
@@ -115,7 +118,7 @@ const updateUser = (req, res) => {
     res.status(400).json({ message: "Prosimo, da izpolniš vsa polja." });
   } else if (!req.body.lastName) {
     res.status(400).json({ message: "Prosimo, da izpolniš vsa polja." });
-  } else if (!req.body.email) {
+  } else if (!req.body.phone) {
     res.status(400).json({ message: "Prosimo, da izpolniš vsa polja." });
   } else if (!req.body.password) {
     res.status(400).json({ message: "Prosimo, da izpolniš vsa polja." });
@@ -129,7 +132,7 @@ const updateUser = (req, res) => {
                 .update({
                   firstName: req.body.firstName,
                   lastName: req.body.lastName,
-                  email: req.body.email,
+                  phone: req.body.phone,
                   password: hash,
                 })
                 .then((user) => {
@@ -200,6 +203,7 @@ const generateJWT = (user) => {
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
+      phone: user.phone,
       image: user.image,
       expires: expires.getTime(),
     },

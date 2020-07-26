@@ -40,6 +40,27 @@
             class="user-avatar rounded-circle mr-2"
           />
           {{ reservation.routes[0].offer.driver.firstName }} {{ reservation.routes[0].offer.driver.lastName }}
+          <i
+            class="far fa-smile profile-icon"
+            *ngIf="
+              reservation.routes[0].offer.driver.ratings.length > 0 && reservation.routes[0].offer.driver.ratings[0].averageRating >= 2.5
+            "
+          ></i>
+          <i
+            class="far fa-meh profile-icon"
+            *ngIf="
+              reservation.routes[0].offer.driver.ratings.length > 0 &&
+              reservation.routes[0].offer.driver.ratings[0].averageRating < 2.5 &&
+              reservation.routes[0].offer.driver.ratings[0].averageRating >= 1.5
+            "
+          ></i>
+          <i
+            class="far fa-frown profile-icon"
+            *ngIf="
+              reservation.routes[0].offer.driver.ratings.length > 0 && reservation.routes[0].offer.driver.ratings[0].averageRating < 1.5
+            "
+          ></i>
+          <span class="text-secondary ml-3">{{ reservation.routes[0].offer.driver.phone }}</span>
         </div>
       </div>
       <div class="col-auto">

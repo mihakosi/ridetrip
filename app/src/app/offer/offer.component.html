@@ -112,7 +112,29 @@
                   [ngClass]="{ 'text-secondary': !reservation.active }"
                   *ngFor="let reservation of route.reservations"
                 >
-                  <p class="mb-1">{{ reservation.user.firstName }} {{ reservation.user.lastName }}</p>
+                  <div class="mb-1">
+                    <img
+                      src="{{ reservation.user.image ? reservation.user.image : '/assets/images/user.png' }}"
+                      class="user-avatar rounded-circle mr-2"
+                    />{{ reservation.user.firstName }} {{ reservation.user.lastName }}
+                    <i
+                      class="far fa-smile profile-icon"
+                      *ngIf="reservation.user.ratings.length > 0 && reservation.user.ratings[0].averageRating >= 2.5"
+                    ></i>
+                    <i
+                      class="far fa-meh profile-icon"
+                      *ngIf="
+                        reservation.user.ratings.length > 0 &&
+                        reservation.user.ratings[0].averageRating < 2.5 &&
+                        reservation.user.ratings[0].averageRating >= 1.5
+                      "
+                    ></i>
+                    <i
+                      class="far fa-frown profile-icon"
+                      *ngIf="reservation.user.ratings.length > 0 && reservation.user.ratings[0].averageRating < 1.5"
+                    ></i>
+                    <span class="text-secondary ml-3">{{ reservation.user.phone }}</span>
+                  </div>
                   <div class="row">
                     <div class="col-6"><i class="fas fa-user-friends mr-2"></i>{{ reservation.passengers }}</div>
                     <div class="col-6"><i class="fas fa-suitcase mr-2"></i>{{ reservation.baggage }}</div>

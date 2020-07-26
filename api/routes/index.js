@@ -9,8 +9,9 @@ var authentication = jwt({
 
 const offersController = require("../controllers/offers");
 const ratingsController = require("../controllers/ratings");
-const ridesController = require("../controllers/rides");
+const recurringController = require("../controllers/recurring");
 const reservationsController = require("../controllers/reservations");
+const ridesController = require("../controllers/rides");
 const vehiclesController = require("../controllers/vehicles");
 const authController = require("../controllers/auth");
 
@@ -26,9 +27,17 @@ router.get("/offers/:id/passengers", authentication, offersController.getPasseng
 /* Ratings */
 router.post("/ratings", authentication, ratingsController.createRating);
 
-/* Rides */
-router.get("/rides", authentication, ridesController.getRides);
-router.get("/rides/:id", authentication, ridesController.getRide);
+/* Recurring */
+router.get("/recurring/rides", authentication, recurringController.getRecurringRides);
+router.get("/recurring/rides/:id", authentication, recurringController.getRecurringRide);
+router.post("/recurring/rides", authentication, recurringController.createRecurringRide);
+router.put("/recurring/rides/:id", authentication, recurringController.updateRecurringRide);
+router.delete("/recurring/rides/:id", authentication, recurringController.deleteRecurringRide);
+router.get("/recurring/offers", authentication, recurringController.getRecurringOffers);
+router.get("/recurring/offers/:id", authentication, recurringController.getRecurringOffer);
+router.post("/recurring/offers", authentication, recurringController.createRecurringOffer);
+router.put("/recurring/offers/:id", authentication, recurringController.updateRecurringOffer);
+router.delete("/recurring/offers/:id", authentication, recurringController.deleteRecurringOffer);
 
 /* Reservations */
 router.get("/reservations", authentication, reservationsController.getReservations);
@@ -38,6 +47,10 @@ router.put("/reservations/:id/cancel", authentication, reservationsController.ca
 router.get("/reservations/:id/location", authentication, reservationsController.getLocation);
 router.put("/reservations/:id/location", authentication, reservationsController.shareLocation);
 router.get("/reservations/:id/driver", authentication, reservationsController.getDriver);
+
+/* Rides */
+router.get("/rides", authentication, ridesController.getRides);
+router.get("/rides/:id", authentication, ridesController.getRide);
 
 /* Vehicles */
 router.get("/vehicles", authentication, vehiclesController.getVehicles);

@@ -184,6 +184,18 @@ a {
   color: #4caf50;
 }
 
+.profile-icon.fa-frown {
+  color: #f44336;
+}
+
+.profile-icon.fa-meh {
+  color: #ffc107;
+}
+
+.profile-icon.fa-smile {
+  color: #4caf50;
+}
+
 .main .btn.floating {
   position: relative;
   width: 42px;
@@ -380,6 +392,10 @@ a {
 
 .main .badge {
   font-weight: bold;
+}
+
+.main .badge-primary {
+  background-color: #14a200;
 }
 
 .main .list-group-item:first-child {

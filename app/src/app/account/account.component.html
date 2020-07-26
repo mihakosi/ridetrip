@@ -42,6 +42,12 @@
         </div>
         <div class="col-md-6">
           <div class="form-group">
+            <label for="phone">Telefonska številka</label>
+            <input [(ngModel)]="user.phone" type="text" class="form-control" id="phone" name="phone" />
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
             <label for="password">Geslo</label>
             <input [(ngModel)]="user.password" type="password" class="form-control" id="password" name="password" />
           </div>

@@ -20,34 +20,42 @@ sequelize
 
 /* Models */
 Offer = sequelize.import("./offers");
+Rating = sequelize.import("./ratings");
+Recurring = sequelize.import("./recurring");
 Reservation = sequelize.import("./reservations");
 RouteReservation = sequelize.import("./routeReservations");
 Route = sequelize.import("./routes");
 User = sequelize.import("./users");
 Vehicle = sequelize.import("./vehicles");
-Rating = sequelize.import("./ratings");
 
 /* Relationships */
+Offer.belongsTo(Recurring, { as: "recurring" });
+Offer.hasMany(Route, { as: "routes", foreignKey: "offerId" });
 Offer.belongsTo(User, { as: "driver" });
 Offer.belongsTo(Vehicle, { as: "vehicle" });
-Offer.hasMany(Route, { as: "routes", foreignKey: "offerId" });
 
 Rating.belongsTo(User, { as: "user" });
 
+Recurring.hasMany(Offer, { as: "offers", foreignKey: "recurringId", allowNull: true });
+Recurring.belongsTo(User, { as: "user" });
+Recurring.belongsTo(Vehicle, { as: "vehicle" });
+
 Reservation.belongsTo(User, { as: "user" });
 
-Reservation.belongsToMany(Route, { through: RouteReservation });
 Route.belongsToMany(Reservation, { through: RouteReservation });
+Reservation.belongsToMany(Route, { through: RouteReservation });
 
 Route.belongsTo(Offer, { as: "offer" });
 
 User.hasMany(Offer, { as: "offers", foreignKey: "driverId" });
+User.hasMany(Rating, { as: "ratings", foreignKey: "userId" });
+User.hasMany(Recurring, { as: "recurring", foreignKey: "userId" });
 User.hasMany(Reservation, { as: "reservations", foreignKey: "userId" });
 User.hasMany(Vehicle, { as: "vehicles", foreignKey: "ownerId" });
-User.hasMany(Rating, { as: "ratings", foreignKey: "userId" });
 
-Vehicle.belongsTo(User, { as: "owner" });
 Vehicle.hasMany(Offer, { as: "offers", foreignKey: "vehicleId" });
+Vehicle.hasMany(Recurring, { as: "recurring", foreignKey: "vehicleId", allowNull: true });
+Vehicle.belongsTo(User, { as: "owner" });
 
 let models = {
   Offer: Offer,
@@ -98,6 +106,7 @@ const fillDatabase = async (models) => {
     firstName: "Janez",
     lastName: "Horvat",
     email: "janez@horvat.com",
+    phone: "041846394",
     password: "$2b$10$upH6WHm0Z9ZqdhBDytQsIOz6iNHZg00OJtwL9aB9T/EPeEX6.UgSq",
   });
 
@@ -105,6 +114,7 @@ const fillDatabase = async (models) => {
     firstName: "Jana",
     lastName: "Gal",
     email: "jana@gal.com",
+    phone: "031567391",
     password: "$2b$10$pFdxVH80/ZmC/zODh1cp7ewYA1xhSec0EgfcHCQYNixN5WHSueUIG",
   });
 
@@ -112,6 +122,7 @@ const fillDatabase = async (models) => {
     firstName: "Lea",
     lastName: "Jiménez",
     email: "lea@jimenez.com",
+    phone: "641732932",
     password: "$2b$10$bD/sRHZSFF5YFcHGz0vugucarWEZ0fQMw8aLqqKh6rRI9iWeGw70m",
   });
 
@@ -119,6 +130,7 @@ const fillDatabase = async (models) => {
     firstName: "Gregor",
     lastName: "Zupan",
     email: "gregor@zupan.com",
+    phone: "030456330",
     password: "$2b$10$G8MxgwPWZcimkYtioVqmTOyoJAxiTpuL.J2LcU6EyiXANBVInKmnu",
   });
 
@@ -275,6 +287,7 @@ module.exports = {
   sequelize,
   Offer,
   Rating,
+  Recurring,
   Reservation,
   RouteReservation,
   Route,
