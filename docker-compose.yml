@@ -5,7 +5,7 @@ services:
     depends_on:
       - postgres
     environment:
-      POSTGRES_CONNECTION_URL: postgres://postgres:postgres@postgres:5432/ridetrip
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/ridetrip
       JWT_PASSWORD: 74r8ohufgw7y8o
       NODE_ENV: development
       PORT: 3000
