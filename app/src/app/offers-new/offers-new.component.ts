@@ -24,6 +24,16 @@ export class OffersNewComponent implements OnInit {
 
   public date: Date = new Date();
 
+  public days: string[] = [];
+
+  public months: string[] = [];
+
+  public years: string[] = [];
+
+  public hours: string[] = [];
+
+  public minutes: string[] = [];
+
   public startSearch = [
     {
       loading: false,
@@ -238,6 +248,39 @@ export class OffersNewComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Generate days
+    for (var i = 1; i <= 31; i++) {
+      this.days.push(i.toString());
+    }
+
+    // Generate months
+    for (var i = 1; i <= 12; i++) {
+      this.months.push(i.toString());
+    }
+
+    // Generate years
+    for (var i = this.date.getFullYear(); i <= 3000; i++) {
+      this.years.push(i.toString());
+    }
+
+    // Generate hours
+    for (var i = 0; i <= 23; i++) {
+      if (i < 10) {
+        this.hours.push("0" + i.toString());
+      } else {
+        this.hours.push(i.toString());
+      }
+    }
+
+    // Generate minutes
+    for (var i = 0; i <= 59; i++) {
+      if (i < 10) {
+        this.minutes.push("0" + i.toString());
+      } else {
+        this.minutes.push(i.toString());
+      }
+    }
+
     this.vehiclesService
       .getVehicles()
       .then((vehicles) => {

@@ -26,6 +26,10 @@ export class RecurringManageOfferComponent implements OnInit {
 
   public date: Date = new Date();
 
+  public hours: string[] = [];
+
+  public minutes: string[] = [];
+
   public startSearch = {
     loading: false,
     message: "",
@@ -176,6 +180,24 @@ export class RecurringManageOfferComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Generate hours
+    for (var i = 0; i <= 23; i++) {
+      if (i < 10) {
+        this.hours.push("0" + i.toString());
+      } else {
+        this.hours.push(i.toString());
+      }
+    }
+
+    // Generate minutes
+    for (var i = 0; i <= 59; i++) {
+      if (i < 10) {
+        this.minutes.push("0" + i.toString());
+      } else {
+        this.minutes.push(i.toString());
+      }
+    }
+
     this.vehiclesService
       .getVehicles()
       .then((vehicles) => {

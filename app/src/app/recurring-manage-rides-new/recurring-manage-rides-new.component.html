@@ -4,7 +4,7 @@
       <span class="back-icon"></span>
     </a>
     <div>
-      <h3 class="mb-0">Dodaj ponavljajoči iskani prevoz</h3>
+      <h3 class="mb-0">Dodaj ponavljajoči prevoz</h3>
     </div>
   </div>
 </div>
@@ -34,26 +34,12 @@
       <label for="hours">Kdaj greš?</label>
       <div class="row">
         <div class="col-auto">
-          <input
-            type="number"
-            class="form-control date-input mb-2 mr-2"
-            id="hours"
-            [(ngModel)]="ride.hours"
-            name="hours"
-            min="0"
-            max="23"
-            placeholder="{{ date | date: 'H' }}"
-          />
-          <input
-            type="number"
-            class="form-control date-input mb-2"
-            id="minutes"
-            [(ngModel)]="ride.minutes"
-            name="minutes"
-            min="0"
-            max="59"
-            placeholder="{{ date | date: 'mm' }}"
-          />
+          <select class="form-control date-input mb-2 mr-2" id="hours" [(ngModel)]="ride.hours" name="hours">
+            <option *ngFor="let hour of hours" value="{{ hour }}">{{ hour }}</option>
+          </select>
+          <select class="form-control date-input mb-2 mr-2" id="minutes" [(ngModel)]="ride.minutes" name="minutes">
+            <option *ngFor="let minute of minutes" value="{{ minute }}">{{ minute }}</option>
+          </select>
         </div>
       </div>
       <div>

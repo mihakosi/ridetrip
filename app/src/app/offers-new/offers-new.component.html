@@ -60,57 +60,24 @@
                   <div class="form-group">
                     <label for="day_0">Kdaj odrineš od tam?</label>
                     <div class="row">
-                      <div class="col-auto">
-                        <input
-                          type="number"
-                          class="form-control date-input mb-2 mr-2"
-                          id="day_0"
-                          [(ngModel)]="offer.stops[0].day"
-                          name="day_0"
-                          min="1"
-                          max="31"
-                          placeholder="{{ date | date: 'd' }}"
-                        />
-                        <input
-                          type="number"
-                          class="form-control date-input mb-2 mr-2"
-                          id="month_0"
-                          [(ngModel)]="offer.stops[0].month"
-                          name="month_0"
-                          min="1"
-                          max="12"
-                          placeholder="{{ date | date: 'M' }}"
-                        />
-                        <input
-                          type="number"
-                          class="form-control date-input-xl mb-2"
-                          id="year_0"
-                          [(ngModel)]="offer.stops[0].year"
-                          name="year_0"
-                          placeholder="{{ date | date: 'yyyy' }}"
-                        />
+                      <div class="col-auto mb-2">
+                        <select class="form-control date-input mr-2" id="day_0" [(ngModel)]="offer.stops[0].day" name="day_0">
+                          <option *ngFor="let day of days" value="{{ day }}">{{ day }}</option>
+                        </select>
+                        <select class="form-control date-input mr-2" id="month_0" [(ngModel)]="offer.stops[0].month" name="month_0">
+                          <option *ngFor="let month of months" value="{{ month }}">{{ month }}</option>
+                        </select>
+                        <select class="form-control date-input-xl mr-2" id="year_0" [(ngModel)]="offer.stops[0].year" name="year_0">
+                          <option *ngFor="let year of years" value="{{ year }}">{{ year }}</option>
+                        </select>
                       </div>
                       <div class="col-auto">
-                        <input
-                          type="number"
-                          class="form-control date-input mb-2 mr-2"
-                          id="hours_0"
-                          [(ngModel)]="offer.stops[0].hours"
-                          name="hours_0"
-                          min="0"
-                          max="23"
-                          placeholder="{{ date | date: 'H' }}"
-                        />
-                        <input
-                          type="number"
-                          class="form-control date-input mb-2"
-                          id="minutes_0"
-                          [(ngModel)]="offer.stops[0].minutes"
-                          name="minutes_0"
-                          min="0"
-                          max="59"
-                          placeholder="{{ date | date: 'mm' }}"
-                        />
+                        <select class="form-control date-input mr-2" id="hours_0" [(ngModel)]="offer.stops[0].hours" name="hours_0">
+                          <option *ngFor="let hour of hours" value="{{ hour }}">{{ hour }}</option>
+                        </select>
+                        <select class="form-control date-input mr-2" id="minutes_0" [(ngModel)]="offer.stops[0].minutes" name="minutes_0">
+                          <option *ngFor="let minute of minutes" value="{{ minute }}">{{ minute }}</option>
+                        </select>
                       </div>
                     </div>
                   </div>
@@ -182,57 +149,29 @@
                       <div class="form-group">
                         <label for="day_1">Kdaj odrineš od tam?</label>
                         <div class="row">
-                          <div class="col-auto">
-                            <input
-                              type="number"
-                              class="form-control date-input mb-2 mr-2"
-                              id="day_1"
-                              [(ngModel)]="offer.stops[1].day"
-                              name="day_1"
-                              min="1"
-                              max="31"
-                              placeholder="{{ date | date: 'd' }}"
-                            />
-                            <input
-                              type="number"
-                              class="form-control date-input mb-2 mr-2"
-                              id="month_1"
-                              [(ngModel)]="offer.stops[1].month"
-                              name="month_1"
-                              min="1"
-                              max="12"
-                              placeholder="{{ date | date: 'M' }}"
-                            />
-                            <input
-                              type="number"
-                              class="form-control date-input-xl mb-2"
-                              id="year_1"
-                              [(ngModel)]="offer.stops[1].year"
-                              name="year_1"
-                              placeholder="{{ date | date: 'yyyy' }}"
-                            />
+                          <div class="col-auto mb-2">
+                            <select class="form-control date-input mr-2" id="day_1" [(ngModel)]="offer.stops[1].day" name="day_1">
+                              <option *ngFor="let day of days" value="{{ day }}">{{ day }}</option>
+                            </select>
+                            <select class="form-control date-input mr-2" id="month_1" [(ngModel)]="offer.stops[1].month" name="month_1">
+                              <option *ngFor="let month of months" value="{{ month }}">{{ month }}</option>
+                            </select>
+                            <select class="form-control date-input-xl mr-2" id="year_1" [(ngModel)]="offer.stops[1].year" name="year_1">
+                              <option *ngFor="let year of years" value="{{ year }}">{{ year }}</option>
+                            </select>
                           </div>
                           <div class="col-auto">
-                            <input
-                              type="number"
-                              class="form-control date-input mb-2 mr-2"
-                              id="hours_1"
-                              [(ngModel)]="offer.stops[1].hours"
-                              name="hours_1"
-                              min="0"
-                              max="23"
-                              placeholder="{{ date | date: 'H' }}"
-                            />
-                            <input
-                              type="number"
-                              class="form-control date-input mb-2"
+                            <select class="form-control date-input mr-2" id="hours_1" [(ngModel)]="offer.stops[1].hours" name="hours_1">
+                              <option *ngFor="let hour of hours" value="{{ hour }}">{{ hour }}</option>
+                            </select>
+                            <select
+                              class="form-control date-input mr-2"
                               id="minutes_1"
                               [(ngModel)]="offer.stops[1].minutes"
                               name="minutes_1"
-                              min="0"
-                              max="59"
-                              placeholder="{{ date | date: 'mm' }}"
-                            />
+                            >
+                              <option *ngFor="let minute of minutes" value="{{ minute }}">{{ minute }}</option>
+                            </select>
                           </div>
                         </div>
                       </div>

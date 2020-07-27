@@ -10,11 +10,7 @@ import { RecurringService } from "../recurring.service";
   styleUrls: ["./recurring-rides.component.css"],
 })
 export class RecurringRidesComponent implements OnInit {
-  constructor(
-    private router: Router,
-    private ridesService: RidesService,
-    private recurringService: RecurringService
-  ) {}
+  constructor(private router: Router, private ridesService: RidesService, private recurringService: RecurringService) {}
 
   public days: any[];
 
