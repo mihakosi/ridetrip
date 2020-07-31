@@ -7,10 +7,8 @@ const getOffers = (req, res) => {
   date.setHours(0, 0);
 
   let operation = Sequelize.Op.gte;
-  let order = "ASC";
   if (req.query.past != null && req.query.past === "true") {
     operation = Sequelize.Op.lt;
-    order = "DESC";
   }
 
   Offer.findAll({
@@ -39,7 +37,7 @@ const getOffers = (req, res) => {
       },
     ],
     where: { driverId: req.payload.id },
-    order: [["routes", "departure", order]],
+    order: [["routes", "departure", "ASC"]],
   })
     .then((offers) => {
       return res.status(200).json(offers);
