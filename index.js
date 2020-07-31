@@ -23,11 +23,10 @@ app.use("/api", api);
 app.use(express.static(path.join(__dirname, "app", "build")));
 
 app.get("*", (req, res, next) => {
-  res.sendFile(path.join(__dirname, "app", "build", "index.html"));
+  res.sendFile(path.join(__dirname, "app", appDirectory, "index.html"));
 });
 
 app.use("/api", (req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
   res.header("Cache-Control", "max-age=3600");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With", "Content-Type", "Accept", "Authorization");
   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");

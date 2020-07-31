@@ -19,6 +19,16 @@ export class NominatimService {
       .catch(this.handleError);
   }
 
+  public getAddress(location: any): Promise<any> {
+    const url: string = `${this.apiUrl}/reverse?lat=${location.latitude}&lon=${location.longitude}&format=json&accept-language=sl`;
+
+    return this.http
+      .get(url)
+      .toPromise()
+      .then((result) => result as any)
+      .catch(this.handleError);
+  }
+
   private handleError(error: any): Promise<any> {
     return Promise.reject(error.error.message || "Podatkov ni mogoče pridobiti.");
   }

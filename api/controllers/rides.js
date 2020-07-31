@@ -75,7 +75,7 @@ const getRides = (req, res) => {
             },
           },
           having: {
-            [Sequelize.Op.or]: [
+            [Sequelize.Op.and]: [
               {
                 startDistance: {
                   [Sequelize.Op.lt]: 6,

@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, OnDestroy } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import { switchMap } from "rxjs/operators";
 import L from "leaflet";
@@ -264,5 +264,9 @@ export class ReservationComponent implements OnInit {
           this.error.message = error;
         }
       );
+  }
+
+  ngOnDestroy(): void {
+    this.stopShareLocation();
   }
 }

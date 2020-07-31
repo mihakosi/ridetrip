@@ -1,6 +1,6 @@
 version: "3"
 services:
-  app:
+  api:
     build: .
     depends_on:
       - postgres
@@ -14,6 +14,13 @@ services:
     networks:
       - ridetrip
     command: npm start
+  app:
+    build: ./app
+    ports:
+      - "4200:4200"
+    networks:
+      - ridetrip
+    command: ng serve --host 0.0.0.0
   postgres:
     build: ./db
     image: postgres:12

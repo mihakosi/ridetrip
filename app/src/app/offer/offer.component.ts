@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, OnDestroy } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import { switchMap } from "rxjs/operators";
 import L from "leaflet";
@@ -192,8 +192,12 @@ export class OfferComponent implements OnInit {
   stopShareLocation(): void {
     this.sharingLocation = false;
 
-    navigator.geolocation.clearWatch(this.watchPosition);
-    clearInterval(this.locationInterval);
+    if (this.watchPosition) {
+      navigator.geolocation.clearWatch(this.watchPosition);
+    }
+    if (this.locationInterval) {
+      clearInterval(this.locationInterval);
+    }
   }
 
   createRating(reservation: number, rating: number): void {
@@ -297,5 +301,9 @@ export class OfferComponent implements OnInit {
           this.error.message = error;
         }
       );
+  }
+
+  ngOnDestroy(): void {
+    this.stopShareLocation();
   }
 }

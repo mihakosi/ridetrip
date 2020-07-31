@@ -7,6 +7,7 @@ var authentication = jwt({
   userProperty: "payload",
 });
 
+const destinationsController = require("../controllers/destinations");
 const offersController = require("../controllers/offers");
 const ratingsController = require("../controllers/ratings");
 const recurringController = require("../controllers/recurring");
@@ -14,6 +15,9 @@ const reservationsController = require("../controllers/reservations");
 const ridesController = require("../controllers/rides");
 const vehiclesController = require("../controllers/vehicles");
 const authController = require("../controllers/auth");
+
+/* Offers */
+router.get("/destinations", authentication, destinationsController.getDestinations);
 
 /* Offers */
 router.get("/offers", authentication, offersController.getOffers);
