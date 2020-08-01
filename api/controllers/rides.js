@@ -27,8 +27,8 @@ const getRides = (req, res) => {
       req.body.baggage = 0;
     }
 
-    let date = new Date(req.query.date);
-    let tomorrow = new Date(req.query.date);
+    let date = new Date(new Date(req.query.date).setHours(0, 0, 0, 0));
+    let tomorrow = new Date(new Date(req.query.date).setHours(0, 0, 0, 0));
     tomorrow.setDate(tomorrow.getDate() + 1);
 
     // Get offers that have stops located within 6 miles of provided start and end location

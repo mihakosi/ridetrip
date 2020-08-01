@@ -68,10 +68,10 @@ export class RecurringOffersComponent implements OnInit {
       .then((offers) => {
         this.recurringService
           .getRecurringOffers()
-          .then((recurring) => {
+          .then((recurrings) => {
             this.days = [];
 
-            if (recurring.length > 0) {
+            if (recurrings.length > 0) {
               for (var i = 0; i < 7; i++) {
                 let date = new Date(new Date().setDate(new Date().getDate() + i));
                 let dayOfWeek = date.getDay();
@@ -105,10 +105,10 @@ export class RecurringOffersComponent implements OnInit {
                     break;
                 }
 
-                recurring.forEach((offer) => {
+                recurrings.forEach((recurring) => {
                   let exists = offers.some((offer) => {
                     return (
-                      offer.recurringId &&
+                      recurring.id == offer.recurringId &&
                       new Date(new Date(offer.routes[0].departure).setHours(0, 0, 0, 0)).getTime() ==
                         new Date(date.setHours(0, 0, 0, 0)).getTime()
                     );
@@ -116,15 +116,15 @@ export class RecurringOffersComponent implements OnInit {
 
                   if (
                     !exists &&
-                    ((dayOfWeek == 0 && offer.sundays) ||
-                      (dayOfWeek == 1 && offer.mondays) ||
-                      (dayOfWeek == 2 && offer.tuesdays) ||
-                      (dayOfWeek == 3 && offer.wednesdays) ||
-                      (dayOfWeek == 4 && offer.thursdays) ||
-                      (dayOfWeek == 5 && offer.fridays) ||
-                      (dayOfWeek == 6 && offer.saturdays))
+                    ((dayOfWeek == 0 && recurring.sundays) ||
+                      (dayOfWeek == 1 && recurring.mondays) ||
+                      (dayOfWeek == 2 && recurring.tuesdays) ||
+                      (dayOfWeek == 3 && recurring.wednesdays) ||
+                      (dayOfWeek == 4 && recurring.thursdays) ||
+                      (dayOfWeek == 5 && recurring.fridays) ||
+                      (dayOfWeek == 6 && recurring.saturdays))
                   ) {
-                    this.days[i].offers.push(offer);
+                    this.days[i].offers.push(recurring);
                   }
                 });
               }
