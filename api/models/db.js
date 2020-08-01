@@ -84,7 +84,7 @@ sequelize.query(`CREATE EXTENSION IF NOT EXISTS cube`).then(() => {
       .then(() => {
         console.log("Tables created.");
 
-        if (process.env.NODE_ENV === "development" || process.env.TESTING === true) {
+        if (process.env.NODE_ENV === "development" || process.env.USE_TEST_DATA === "true") {
           fillDatabase(models)
             .then(() => {
               console.log("Test data inserted.");
