@@ -73,6 +73,21 @@ export class OffersService {
       .catch(this.handleError);
   }
 
+  public getLatestOffer(): Promise<any> {
+    const url: string = `${this.apiUrl}/offers/latest`;
+    const httpHeaders = {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${this.storage.getItem("token")}`,
+      }),
+    };
+
+    return this.http
+      .get(url, httpHeaders)
+      .toPromise()
+      .then((result) => result as any)
+      .catch(this.handleError);
+  }
+
   public getLocation(offer: any): Promise<any> {
     const url: string = `${this.apiUrl}/offers/${offer.id}/location`;
     const httpHeaders = {

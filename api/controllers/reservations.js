@@ -368,10 +368,10 @@ const cancelReservation = (req, res) => {
   }
 };
 
+// Get latest reservation for the authorised user
 const getLatestReservation = (req, res) => {
   let date = new Date();
 
-  // Get active reservation
   Reservation.findOne({
     attributes: ["id", "active"],
     include: [
@@ -405,13 +405,14 @@ const getLatestReservation = (req, res) => {
                   WHERE "reservations"."userId" = ${req.payload.id} AND "reservations"."active" = TRUE
                   GROUP BY "routes"."offerId"
                   HAVING
-                    MIN(EXTRACT(EPOCH FROM (to_timestamp(${date.valueOf()}) - "routes"."departure"))) = (
-                      SELECT MIN(EXTRACT(EPOCH FROM (to_timestamp(${date.valueOf()}) - "routes"."departure")))
+                    MIN(EXTRACT(EPOCH FROM (to_timestamp(${date.getTime() / 1000}) - "routes"."departure"))) = (
+                      SELECT MIN(EXTRACT(EPOCH FROM (to_timestamp(${date.getTime() / 1000}) - "routes"."departure")))
                       FROM "routes"
                       INNER JOIN "routeReservations" ON "routeReservations"."routeId" = "routes"."id"
                       INNER JOIN "reservations" ON "reservations"."id" = "routeReservations"."reservationId"
                       WHERE "reservations"."userId" = ${req.payload.id} AND "reservations"."active" = TRUE
-                      HAVING MIN(EXTRACT(EPOCH FROM (to_timestamp(${date.valueOf()}) - "routes"."departure"))) >= 0
+                      GROUP BY "routes"."departure", "routes"."offerId"
+                      HAVING MIN(EXTRACT(EPOCH FROM (to_timestamp(${date.getTime() / 1000}) - "routes"."departure"))) >= 0
                     )`
               ),
             ],

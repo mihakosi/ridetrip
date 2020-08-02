@@ -6,6 +6,7 @@ import { Router } from "@angular/router";
 import { ErrorService } from "../error.service";
 import { OsrmService } from "../osrm.service";
 import { RidesService } from "../rides.service";
+import { OffersService } from "../offers.service";
 import { NominatimService } from "../nominatim.service";
 import { ReservationsService } from "../reservations.service";
 import { DestinationsService } from "../destinations.service";
@@ -21,6 +22,7 @@ export class MapComponent implements OnInit {
     private errorService: ErrorService,
     private osrmService: OsrmService,
     private ridesService: RidesService,
+    private offersService: OffersService,
     private nominatimService: NominatimService,
     private reservationsService: ReservationsService,
     private destinationsService: DestinationsService
@@ -102,60 +104,123 @@ export class MapComponent implements OnInit {
             this.errorService.onGetError.emit({ message: error, type: "danger" });
           });
 
-        // Get active reservation
+        // Get latest reservation
         this.reservationsService
           .getLatestReservation()
           .then((reservation) => {
-            let locations = [];
-            let waypoints = [];
-            for (var i = 0; i < reservation.routes.length; i++) {
-              if (i == 0) {
+            if (reservation) {
+              let locations = [];
+              let waypoints = [];
+              for (var i = 0; i < reservation.routes.length; i++) {
+                if (i == 0) {
+                  locations.push({
+                    latitude: reservation.routes[i].startLatitude,
+                    longitude: reservation.routes[i].startLongitude,
+                  });
+
+                  waypoints.push(L.latLng(reservation.routes[i].startLatitude, reservation.routes[i].startLongitude));
+                }
+
                 locations.push({
-                  latitude: reservation.routes[i].startLatitude,
-                  longitude: reservation.routes[i].startLongitude,
+                  latitude: reservation.routes[i].endLatitude,
+                  longitude: reservation.routes[i].endLongitude,
                 });
 
-                waypoints.push(L.latLng(reservation.routes[i].startLatitude, reservation.routes[i].startLongitude));
+                waypoints.push(L.latLng(reservation.routes[i].endLatitude, reservation.routes[i].endLongitude));
               }
 
-              locations.push({
-                latitude: reservation.routes[i].endLatitude,
-                longitude: reservation.routes[i].endLongitude,
-              });
+              this.osrmService
+                .getRoute(locations)
+                .then((route) => {
+                  // Calculate duration of the ride and estimated arrival time
+                  let duration = 0;
+                  route.routes.forEach((element) => {
+                    duration += element.duration;
+                  });
 
-              waypoints.push(L.latLng(reservation.routes[i].endLatitude, reservation.routes[i].endLongitude));
+                  let estimatedArrival = new Date(new Date(reservation.routes[0].departure).getTime() + duration * 1000);
+
+                  if (
+                    new Date(reservation.routes[0].departure).getTime() < new Date().getTime() &&
+                    new Date().getTime() < estimatedArrival.getTime()
+                  ) {
+                    // Show route if the ride is currently being performed
+                    L.Routing.control({
+                      waypoints: waypoints,
+                      lineOptions: {
+                        addWaypoints: false,
+                      },
+                      createMarker: function () {
+                        return null;
+                      },
+                    }).addTo(this.map);
+                  }
+                })
+                .catch((error) => {
+                  this.errorService.onGetError.emit({ message: "Časa potovanja ni mogoče pridobiti.", type: "danger" });
+                });
             }
+          })
+          .catch((error) => {
+            this.errorService.onGetError.emit({ message: error, type: "danger" });
+          });
 
-            this.osrmService
-              .getRoute(locations)
-              .then((route) => {
-                // Calculate duration of the ride and estimated arrival time
-                let duration = 0;
-                route.routes.forEach((element) => {
-                  duration += element.duration;
+        // Get latest offer
+        this.offersService
+          .getLatestOffer()
+          .then((offer) => {
+            if (offer) {
+              let locations = [];
+              let waypoints = [];
+              for (var i = 0; i < offer.routes.length; i++) {
+                if (i == 0) {
+                  locations.push({
+                    latitude: offer.routes[i].startLatitude,
+                    longitude: offer.routes[i].startLongitude,
+                  });
+
+                  waypoints.push(L.latLng(offer.routes[i].startLatitude, offer.routes[i].startLongitude));
+                }
+
+                locations.push({
+                  latitude: offer.routes[i].endLatitude,
+                  longitude: offer.routes[i].endLongitude,
                 });
 
-                let estimatedArrival = new Date(new Date(reservation.routes[0].departure).getTime() + duration * 1000);
+                waypoints.push(L.latLng(offer.routes[i].endLatitude, offer.routes[i].endLongitude));
+              }
 
-                if (
-                  new Date(reservation.routes[0].departure).getTime() < new Date().getTime() &&
-                  new Date().getTime() < estimatedArrival.getTime()
-                ) {
-                  // Show route if the ride is currently being performed
-                  L.Routing.control({
-                    waypoints: waypoints,
-                    lineOptions: {
-                      addWaypoints: false,
-                    },
-                    createMarker: function () {
-                      return null;
-                    },
-                  }).addTo(this.map);
-                }
-              })
-              .catch((error) => {
-                this.errorService.onGetError.emit({ message: "Časa potovanja ni mogoče pridobiti.", type: "danger" });
-              });
+              this.osrmService
+                .getRoute(locations)
+                .then((route) => {
+                  // Calculate duration of the ride and estimated arrival time
+                  let duration = 0;
+                  route.routes.forEach((element) => {
+                    duration += element.duration;
+                  });
+
+                  let estimatedArrival = new Date(new Date(offer.routes[0].departure).getTime() + duration * 1000);
+
+                  if (
+                    new Date(offer.routes[0].departure).getTime() < new Date().getTime() &&
+                    new Date().getTime() < estimatedArrival.getTime()
+                  ) {
+                    // Show route if the ride is currently being performed
+                    L.Routing.control({
+                      waypoints: waypoints,
+                      lineOptions: {
+                        addWaypoints: false,
+                      },
+                      createMarker: function () {
+                        return null;
+                      },
+                    }).addTo(this.map);
+                  }
+                })
+                .catch((error) => {
+                  this.errorService.onGetError.emit({ message: "Časa potovanja ni mogoče pridobiti.", type: "danger" });
+                });
+            }
           })
           .catch((error) => {
             this.errorService.onGetError.emit({ message: error, type: "danger" });

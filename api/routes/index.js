@@ -21,6 +21,7 @@ router.get("/destinations", authentication, destinationsController.getDestinatio
 
 /* Offers */
 router.get("/offers", authentication, offersController.getOffers);
+router.get("/offers/latest", authentication, offersController.getLatestOffer);
 router.get("/offers/:id", authentication, offersController.getOffer);
 router.post("/offers", authentication, offersController.createOffer);
 router.put("/offers/:id/cancel", authentication, offersController.cancelOffer);

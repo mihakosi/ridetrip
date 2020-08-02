@@ -319,6 +319,66 @@ const cancelOffer = (req, res) => {
   }
 };
 
+// Get latest offer for the authorised user
+const getLatestOffer = (req, res) => {
+  let date = new Date();
+
+  Offer.findOne({
+    attributes: ["id", "active"],
+    include: [
+      {
+        model: Route,
+        as: "routes",
+        attributes: [
+          "id",
+          "start",
+          "startSimple",
+          "startLatitude",
+          "startLongitude",
+          "end",
+          "endSimple",
+          "endLatitude",
+          "endLongitude",
+          "departure",
+          "price",
+        ],
+        where: {
+          offerId: {
+            [Sequelize.Op.in]: [
+              sequelize.literal(
+                `SELECT "offerId"
+                  FROM "routes"
+                  INNER JOIN "offers" ON "offers"."id" = "routes"."offerId"
+                  WHERE "offers"."driverId" = ${req.payload.id} AND "offers"."active" = TRUE
+                  GROUP BY "routes"."offerId"
+                  HAVING
+                    MIN(EXTRACT(EPOCH FROM (to_timestamp(${date.getTime() / 1000}) - "routes"."departure"))) = (
+                      SELECT MIN(EXTRACT(EPOCH FROM (to_timestamp(${date.getTime() / 1000}) - "routes"."departure")))
+                      FROM "routes"
+                      INNER JOIN "offers" ON "offers"."id" = "routes"."offerId"
+                      WHERE "offers"."driverId" = ${req.payload.id} AND "offers"."active" = TRUE
+                      GROUP BY "routes"."departure", "routes"."offerId"
+                      HAVING MIN(EXTRACT(EPOCH FROM (to_timestamp(${date.getTime() / 1000}) - "routes"."departure"))) >= 0
+                    )`
+              ),
+            ],
+          },
+        },
+      },
+    ],
+    where: { driverId: req.payload.id, active: true },
+    order: [["routes", "departure", "ASC"]],
+  })
+    .then((offer) => {
+      return res.status(200).json(offer);
+    })
+    .catch((error) => {
+      return res.status(500).json({
+        message: "Nekaj je šlo narobe. Prosimo, poskusi znova.",
+      });
+    });
+};
+
 // Get passengers' locations for an offer with the given ID
 const getLocation = (req, res) => {
   Reservation.findAll({
@@ -473,6 +533,7 @@ module.exports = {
   getOffer,
   createOffer,
   cancelOffer,
+  getLatestOffer,
   getLocation,
   shareLocation,
   getPassengers,
