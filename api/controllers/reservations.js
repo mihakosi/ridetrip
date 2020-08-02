@@ -368,6 +368,70 @@ const cancelReservation = (req, res) => {
   }
 };
 
+const getLatestReservation = (req, res) => {
+  let date = new Date();
+
+  // Get active reservation
+  Reservation.findOne({
+    attributes: ["id", "active"],
+    include: [
+      {
+        model: Route,
+        as: "routes",
+        attributes: [
+          "start",
+          "startSimple",
+          "startLatitude",
+          "startLongitude",
+          "end",
+          "endSimple",
+          "endLatitude",
+          "endLongitude",
+          "departure",
+        ],
+        through: {
+          model: RouteReservation,
+          as: "routeReservations",
+          attributes: [],
+        },
+        where: {
+          offerId: {
+            [Sequelize.Op.in]: [
+              sequelize.literal(
+                `SELECT "offerId"
+                  FROM "routes"
+                  INNER JOIN "routeReservations" ON "routeReservations"."routeId" = "routes"."id"
+                  INNER JOIN "reservations" ON "reservations"."id" = "routeReservations"."reservationId"
+                  WHERE "reservations"."userId" = ${req.payload.id} AND "reservations"."active" = TRUE
+                  GROUP BY "routes"."offerId"
+                  HAVING
+                    MIN(EXTRACT(EPOCH FROM (to_timestamp(${date.valueOf()}) - "routes"."departure"))) = (
+                      SELECT MIN(EXTRACT(EPOCH FROM (to_timestamp(${date.valueOf()}) - "routes"."departure")))
+                      FROM "routes"
+                      INNER JOIN "routeReservations" ON "routeReservations"."routeId" = "routes"."id"
+                      INNER JOIN "reservations" ON "reservations"."id" = "routeReservations"."reservationId"
+                      WHERE "reservations"."userId" = ${req.payload.id} AND "reservations"."active" = TRUE
+                      HAVING MIN(EXTRACT(EPOCH FROM (to_timestamp(${date.valueOf()}) - "routes"."departure"))) >= 0
+                    )`
+              ),
+            ],
+          },
+        },
+      },
+    ],
+    where: { userId: req.payload.id, active: true },
+    order: [["routes", "departure", "ASC"]],
+  })
+    .then((reservation) => {
+      return res.status(200).json(reservation);
+    })
+    .catch((error) => {
+      return res.status(500).json({
+        message: "Nekaj je šlo narobe. Prosimo, poskusi znova.",
+      });
+    });
+};
+
 // Get driver's location for a reservation with the given ID
 const getLocation = (req, res) => {
   Offer.findOne({
@@ -521,6 +585,7 @@ module.exports = {
   getReservation,
   createReservation,
   cancelReservation,
+  getLatestReservation,
   getLocation,
   shareLocation,
   getDriver,

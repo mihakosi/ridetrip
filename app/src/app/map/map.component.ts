@@ -1,11 +1,13 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, OnDestroy } from "@angular/core";
 import L from "leaflet";
 import "leaflet-routing-machine";
 import { Router } from "@angular/router";
 
 import { ErrorService } from "../error.service";
+import { OsrmService } from "../osrm.service";
 import { RidesService } from "../rides.service";
 import { NominatimService } from "../nominatim.service";
+import { ReservationsService } from "../reservations.service";
 import { DestinationsService } from "../destinations.service";
 
 @Component({
@@ -17,8 +19,10 @@ export class MapComponent implements OnInit {
   constructor(
     private router: Router,
     private errorService: ErrorService,
+    private osrmService: OsrmService,
     private ridesService: RidesService,
     private nominatimService: NominatimService,
+    private reservationsService: ReservationsService,
     private destinationsService: DestinationsService
   ) {}
 
@@ -63,6 +67,7 @@ export class MapComponent implements OnInit {
           longitude: position.coords.longitude,
         };
 
+        // Get available destinations for the upcoming week
         this.destinationsService
           .getDestinations(this.location)
           .then((destinations) => {
@@ -92,6 +97,65 @@ export class MapComponent implements OnInit {
 
               this.destinations.push(marker);
             });
+          })
+          .catch((error) => {
+            this.errorService.onGetError.emit({ message: error, type: "danger" });
+          });
+
+        // Get active reservation
+        this.reservationsService
+          .getLatestReservation()
+          .then((reservation) => {
+            let locations = [];
+            let waypoints = [];
+            for (var i = 0; i < reservation.routes.length; i++) {
+              if (i == 0) {
+                locations.push({
+                  latitude: reservation.routes[i].startLatitude,
+                  longitude: reservation.routes[i].startLongitude,
+                });
+
+                waypoints.push(L.latLng(reservation.routes[i].startLatitude, reservation.routes[i].startLongitude));
+              }
+
+              locations.push({
+                latitude: reservation.routes[i].endLatitude,
+                longitude: reservation.routes[i].endLongitude,
+              });
+
+              waypoints.push(L.latLng(reservation.routes[i].endLatitude, reservation.routes[i].endLongitude));
+            }
+
+            this.osrmService
+              .getRoute(locations)
+              .then((route) => {
+                // Calculate duration of the ride and estimated arrival time
+                let duration = 0;
+                route.routes.forEach((element) => {
+                  duration += element.duration;
+                });
+
+                let estimatedArrival = new Date(new Date(reservation.routes[0].departure).getTime() + duration * 1000);
+
+                if (
+                  new Date(reservation.routes[0].departure).getTime() < new Date().getTime() &&
+                  new Date().getTime() < estimatedArrival.getTime()
+                ) {
+                  // Show route if the ride is currently being performed
+                  L.Routing.control({
+                    waypoints: waypoints,
+                    lineOptions: {
+                      addWaypoints: false,
+                    },
+                    createMarker: function () {
+                      return null;
+                    },
+                  }).addTo(this.map);
+                }
+              })
+              .catch((error) => {
+                this.errorService.onGetError.emit({ message: "Časa potovanja ni mogoče pridobiti.", type: "danger" });
+              });
           })
           .catch((error) => {
             this.errorService.onGetError.emit({ message: error, type: "danger" });
@@ -148,5 +212,9 @@ export class MapComponent implements OnInit {
   ngOnInit(): void {
     this.initializeMap();
     this.shareLocation();
+  }
+
+  ngOnDestroy(): void {
+    this.stopShareLocation();
   }
 }

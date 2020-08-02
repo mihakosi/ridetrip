@@ -7,7 +7,7 @@ import { HttpClient, HttpHeaders } from "@angular/common/http";
 export class NominatimService {
   constructor(private http: HttpClient) {}
 
-  private apiUrl = "https://nominatim.openstreetmap.org/";
+  private apiUrl = "https://nominatim.openstreetmap.org";
 
   public getSearch(search: string): Promise<any[]> {
     const url: string = `${this.apiUrl}/search?q=${search}&format=json&addressdetails=1&accept-language=sl`;

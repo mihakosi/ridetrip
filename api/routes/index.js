@@ -45,6 +45,7 @@ router.delete("/recurring/offers/:id", authentication, recurringController.delet
 
 /* Reservations */
 router.get("/reservations", authentication, reservationsController.getReservations);
+router.get("/reservations/latest", authentication, reservationsController.getLatestReservation);
 router.get("/reservations/:id", authentication, reservationsController.getReservation);
 router.post("/reservations", authentication, reservationsController.createReservation);
 router.put("/reservations/:id/cancel", authentication, reservationsController.cancelReservation);
