@@ -45,6 +45,23 @@ a {
   width: calc(100% - 2rem);
 }
 
+.map-info {
+  z-index: 400;
+  top: 118px;
+  right: 1rem;
+  width: calc(100% - 2rem);
+  background: #fff;
+  border: 1px solid #ced4da;
+  border-radius: 2px;
+}
+
+@media (min-width: 768px) {
+  .map-info {
+    min-width: 260px;
+    width: auto;
+  }
+}
+
 .cursor-pointer {
   cursor: pointer;
 }

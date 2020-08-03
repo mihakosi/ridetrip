@@ -123,16 +123,17 @@ export class ReservationComponent implements OnInit {
   shareLocation(): void {
     this.sharingLocation = true;
 
-    // Icons created by Twitter
-    var passengerPin = L.icon({
-      iconUrl: "/assets/images/passenger.svg",
+    // Car icon created by Twitter
+    // Added grey circle with white border as background
+    var driverPin = L.icon({
+      iconUrl: "/assets/images/car.svg",
       iconSize: [40, 40],
       iconAnchor: [20, 40],
       popupAnchor: [0, -40],
     });
 
-    var driverPin = L.icon({
-      iconUrl: "/assets/images/car.svg",
+    var locationPin = L.icon({
+      iconUrl: "/assets/images/location.svg",
       iconSize: [40, 40],
       iconAnchor: [20, 40],
       popupAnchor: [0, -40],
@@ -153,7 +154,7 @@ export class ReservationComponent implements OnInit {
             }
 
             if (reservation.latitude && reservation.longitude) {
-              this.passengerMarker = L.marker([reservation.latitude, reservation.longitude], { icon: passengerPin });
+              this.passengerMarker = L.marker([reservation.latitude, reservation.longitude], { icon: locationPin });
               this.passengerMarker.addTo(this.map);
             }
           })

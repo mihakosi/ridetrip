@@ -350,16 +350,10 @@ const getLatestOffer = (req, res) => {
                   FROM "routes"
                   INNER JOIN "offers" ON "offers"."id" = "routes"."offerId"
                   WHERE "offers"."driverId" = ${req.payload.id} AND "offers"."active" = TRUE
-                  GROUP BY "routes"."offerId"
-                  HAVING
-                    MIN(EXTRACT(EPOCH FROM (to_timestamp(${date.getTime() / 1000}) - "routes"."departure"))) = (
-                      SELECT MIN(EXTRACT(EPOCH FROM (to_timestamp(${date.getTime() / 1000}) - "routes"."departure")))
-                      FROM "routes"
-                      INNER JOIN "offers" ON "offers"."id" = "routes"."offerId"
-                      WHERE "offers"."driverId" = ${req.payload.id} AND "offers"."active" = TRUE
-                      GROUP BY "routes"."departure", "routes"."offerId"
-                      HAVING MIN(EXTRACT(EPOCH FROM (to_timestamp(${date.getTime() / 1000}) - "routes"."departure"))) >= 0
-                    )`
+                  GROUP BY "routes"."departure", "routes"."offerId"
+                  HAVING MIN(EXTRACT(EPOCH FROM (to_timestamp(${date.getTime() / 1000}) - "routes"."departure"))) >= 0
+                  ORDER BY MIN(EXTRACT(EPOCH FROM (to_timestamp(${date.getTime() / 1000}) - "routes"."departure")))
+                  LIMIT 1`
               ),
             ],
           },

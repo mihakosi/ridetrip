@@ -118,7 +118,8 @@ export class OfferComponent implements OnInit {
   shareLocation(): void {
     this.sharingLocation = true;
 
-    // Icons created by Twitter
+    // Person icon created by Twitter
+    // Added grey circle with white border as background
     var passengerPin = L.icon({
       iconUrl: "/assets/images/passenger.svg",
       iconSize: [40, 40],
@@ -126,8 +127,8 @@ export class OfferComponent implements OnInit {
       popupAnchor: [0, -40],
     });
 
-    var driverPin = L.icon({
-      iconUrl: "/assets/images/car.svg",
+    var locationPin = L.icon({
+      iconUrl: "/assets/images/location.svg",
       iconSize: [40, 40],
       iconAnchor: [20, 40],
       popupAnchor: [0, -40],
@@ -148,7 +149,7 @@ export class OfferComponent implements OnInit {
             }
 
             if (offer.latitude && offer.longitude) {
-              this.driverMarker = L.marker([offer.latitude, offer.longitude], { icon: driverPin });
+              this.driverMarker = L.marker([offer.latitude, offer.longitude], { icon: locationPin });
               this.driverMarker.addTo(this.map);
             }
           })

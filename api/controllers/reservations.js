@@ -403,17 +403,10 @@ const getLatestReservation = (req, res) => {
                   INNER JOIN "routeReservations" ON "routeReservations"."routeId" = "routes"."id"
                   INNER JOIN "reservations" ON "reservations"."id" = "routeReservations"."reservationId"
                   WHERE "reservations"."userId" = ${req.payload.id} AND "reservations"."active" = TRUE
-                  GROUP BY "routes"."offerId"
-                  HAVING
-                    MIN(EXTRACT(EPOCH FROM (to_timestamp(${date.getTime() / 1000}) - "routes"."departure"))) = (
-                      SELECT MIN(EXTRACT(EPOCH FROM (to_timestamp(${date.getTime() / 1000}) - "routes"."departure")))
-                      FROM "routes"
-                      INNER JOIN "routeReservations" ON "routeReservations"."routeId" = "routes"."id"
-                      INNER JOIN "reservations" ON "reservations"."id" = "routeReservations"."reservationId"
-                      WHERE "reservations"."userId" = ${req.payload.id} AND "reservations"."active" = TRUE
-                      GROUP BY "routes"."departure", "routes"."offerId"
-                      HAVING MIN(EXTRACT(EPOCH FROM (to_timestamp(${date.getTime() / 1000}) - "routes"."departure"))) >= 0
-                    )`
+                  GROUP BY "routes"."departure", "routes"."offerId"
+                  HAVING MIN(EXTRACT(EPOCH FROM (to_timestamp(${date.getTime() / 1000}) - "routes"."departure"))) >= 0
+                  ORDER BY MIN(EXTRACT(EPOCH FROM (to_timestamp(${date.getTime() / 1000}) - "routes"."departure")))
+                  LIMIT 1`
               ),
             ],
           },

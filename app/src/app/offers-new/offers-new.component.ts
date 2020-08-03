@@ -113,9 +113,8 @@ export class OffersNewComponent implements OnInit {
     this.offer.baggage = vehicle.baggage;
   }
 
-  getSearch(event): void {
+  getSearch(event, i): void {
     let type = event.target.getAttribute("data-type");
-    let i = type === "start" ? event.target.getAttribute("data-index") : 0;
 
     if (type === "start") {
       this.startSearch[i].loading = true;

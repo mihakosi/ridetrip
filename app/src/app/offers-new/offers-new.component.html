@@ -46,8 +46,7 @@
                 [(ngModel)]="offer.stops[0].start"
                 name="start_0"
                 data-type="start"
-                data-index="0"
-                (focusout)="getSearch($event)"
+                (focusout)="getSearch($event, 0)"
               />
               <small *ngIf="startSearch[0].loading">Iskanje lokacije ...</small>
               <small *ngIf="startSearch[0].message" class="text-danger">{{ startSearch[0].message }}</small>
@@ -121,83 +120,104 @@
             </div>
           </div>
           <div class="collapse" id="stopContainer">
-            <ng-container *ngIf="offer.stops[1]">
-              <div class="row align-items-center">
-                <div class="col-auto">
-                  <div class="point"></div>
-                </div>
-                <div class="col pl-0">
-                  <label for="start_1">Kje načrtuješ postanek?</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="start_1"
-                    [(ngModel)]="offer.stops[1].start"
-                    name="start_1"
-                    data-type="start"
-                    data-index="1"
-                    (focusout)="getSearch($event)"
-                  />
-                  <small *ngIf="startSearch[1].loading">Iskanje lokacije ...</small>
-                  <small *ngIf="startSearch[1].message" class="text-danger">{{ startSearch[1].message }}</small>
-                </div>
-              </div>
-              <div class="row align-items-center">
-                <div class="col-12">
-                  <div class="route">
-                    <div class="pb-2">
-                      <div class="form-group">
-                        <label for="day_1">Kdaj odrineš od tam?</label>
-                        <div class="row">
-                          <div class="col-auto mb-2">
-                            <select class="form-control date-input mr-2" id="day_1" [(ngModel)]="offer.stops[1].day" name="day_1">
-                              <option *ngFor="let day of days" value="{{ day }}">{{ day }}</option>
-                            </select>
-                            <select class="form-control date-input mr-2" id="month_1" [(ngModel)]="offer.stops[1].month" name="month_1">
-                              <option *ngFor="let month of months" value="{{ month }}">{{ month }}</option>
-                            </select>
-                            <select class="form-control date-input-xl mr-2" id="year_1" [(ngModel)]="offer.stops[1].year" name="year_1">
-                              <option *ngFor="let year of years" value="{{ year }}">{{ year }}</option>
-                            </select>
-                          </div>
-                          <div class="col-auto">
-                            <select class="form-control date-input mr-2" id="hours_1" [(ngModel)]="offer.stops[1].hours" name="hours_1">
-                              <option *ngFor="let hour of hours" value="{{ hour }}">{{ hour }}</option>
-                            </select>
-                            <select
-                              class="form-control date-input mr-2"
-                              id="minutes_1"
-                              [(ngModel)]="offer.stops[1].minutes"
-                              name="minutes_1"
-                            >
-                              <option *ngFor="let minute of minutes" value="{{ minute }}">{{ minute }}</option>
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label for="price_1">Kolikšni so skupni stroški prevoza na tem delu poti?</label>
-                        <input
-                          type="number"
-                          step="0.01"
-                          class="form-control mb-2"
-                          id="price_1"
-                          [(ngModel)]="offer.stops[1].price"
-                          name="price_1"
-                        />
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      class="btn btn-link p-0 collapse show"
-                      (click)="removeStop()"
-                      onclick="$('#stopContainer').collapse('hide'); $('#addStop').collapse('show');"
-                    >
-                      <i class="fas fa-minus mr-2"></i> Ne načrtuješ postanka?
-                    </button>
+            <ng-container *ngFor="let stop of offer.stops; let i = index">
+              <ng-container *ngIf="i > 0">
+                <div class="row align-items-center">
+                  <div class="col-auto">
+                    <div class="point"></div>
+                  </div>
+                  <div class="col pl-0">
+                    <label for="start_{{ i }}">Kje načrtuješ postanek?</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="start_{{ i }}"
+                      [(ngModel)]="offer.stops[i].start"
+                      name="start_{{ i }}"
+                      data-type="start"
+                      (focusout)="getSearch($event, i)"
+                    />
+                    <small *ngIf="startSearch[i].loading">Iskanje lokacije ...</small>
+                    <small *ngIf="startSearch[i].message" class="text-danger">{{ startSearch[i].message }}</small>
                   </div>
                 </div>
-              </div>
+                <div class="row align-items-center">
+                  <div class="col-12">
+                    <div class="route">
+                      <div class="pb-2">
+                        <div class="form-group">
+                          <label for="day_{{ i }}">Kdaj odrineš od tam?</label>
+                          <div class="row">
+                            <div class="col-auto mb-2">
+                              <select
+                                class="form-control date-input mr-2"
+                                id="day_{{ i }}"
+                                [(ngModel)]="offer.stops[i].day"
+                                name="day_{{ i }}"
+                              >
+                                <option *ngFor="let day of days" value="{{ day }}">{{ day }}</option>
+                              </select>
+                              <select
+                                class="form-control date-input mr-2"
+                                id="month_{{ i }}"
+                                [(ngModel)]="offer.stops[i].month"
+                                name="month_{{ i }}"
+                              >
+                                <option *ngFor="let month of months" value="{{ month }}">{{ month }}</option>
+                              </select>
+                              <select
+                                class="form-control date-input-xl mr-2"
+                                id="year_{{ i }}"
+                                [(ngModel)]="offer.stops[i].year"
+                                name="year_{{ i }}"
+                              >
+                                <option *ngFor="let year of years" value="{{ year }}">{{ year }}</option>
+                              </select>
+                            </div>
+                            <div class="col-auto">
+                              <select
+                                class="form-control date-input mr-2"
+                                id="hours_{{ i }}"
+                                [(ngModel)]="offer.stops[i].hours"
+                                name="hours_{{ i }}"
+                              >
+                                <option *ngFor="let hour of hours" value="{{ hour }}">{{ hour }}</option>
+                              </select>
+                              <select
+                                class="form-control date-input mr-2"
+                                id="minutes_{{ i }}"
+                                [(ngModel)]="offer.stops[i].minutes"
+                                name="minutes_{{ i }}"
+                              >
+                                <option *ngFor="let minute of minutes" value="{{ minute }}">{{ minute }}</option>
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label for="price_{{ i }}">Kolikšni so skupni stroški prevoza na tem delu poti?</label>
+                          <input
+                            type="number"
+                            step="0.01"
+                            class="form-control mb-2"
+                            id="price_{{ i }}"
+                            [(ngModel)]="offer.stops[i].price"
+                            name="price_{{ i }}"
+                          />
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        class="btn btn-link p-0 collapse show"
+                        (click)="removeStop()"
+                        onclick="$('#stopContainer').collapse('hide'); $('#addStop').collapse('show');"
+                      >
+                        <i class="fas fa-minus mr-2"></i> Ne načrtuješ postanka?
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
             </ng-container>
           </div>
           <div class="row align-items-center">
@@ -213,7 +233,7 @@
                 [(ngModel)]="offer.end"
                 name="end"
                 data-type="end"
-                (focusout)="getSearch($event)"
+                (focusout)="getSearch($event, null)"
               />
               <small *ngIf="endSearch.loading">Iskanje lokacije ...</small>
               <small *ngIf="endSearch.message" class="text-danger">{{ endSearch.message }}</small>
