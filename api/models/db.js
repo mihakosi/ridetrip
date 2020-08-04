@@ -68,19 +68,12 @@ let models = {
   Vehicle: Vehicle,
 };
 
-let syncOptions = {};
-if (process.env.NODE_ENV === "development") {
-  syncOptions.force = true;
-} else {
-  syncOptions.alter = true;
-}
-
 /* Set up extensions */
 sequelize.query(`CREATE EXTENSION IF NOT EXISTS cube`).then(() => {
   sequelize.query(`CREATE EXTENSION IF NOT EXISTS earthdistance`).then(() => {
     /* Sync */
     sequelize
-      .sync(syncOptions)
+      .sync({ alter: true })
       .then(() => {
         console.log("Tables created.");
 
@@ -111,113 +104,194 @@ const fillDatabase = async (models) => {
   let date = new Date();
   date.setDate(date.getDate() + ((1 + 7 - date.getDay()) % 7));
 
-  let user = await models.User.findOne({
-    where: {
-      email: "janez.horvat@example.com",
-    },
-  });
-
-  if (!user) {
-    /* Users */
-    await models.User.create({
+  /* Users */
+  await models.User.create(
+    {
+      id: 1,
       firstName: "Janez",
       lastName: "Horvat",
       email: "janez.horvat@example.com",
       phone: "041846394",
       password: "$2b$10$upH6WHm0Z9ZqdhBDytQsIOz6iNHZg00OJtwL9aB9T/EPeEX6.UgSq",
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.User.create({
+  await models.User.create(
+    {
+      id: 2,
       firstName: "Jana",
       lastName: "Gal",
       email: "jana.gal@example.com",
       phone: "031567391",
       password: "$2b$10$pFdxVH80/ZmC/zODh1cp7ewYA1xhSec0EgfcHCQYNixN5WHSueUIG",
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.User.create({
+  await models.User.create(
+    {
+      id: 3,
       firstName: "Lea",
       lastName: "Jiménez",
       email: "lea.jimenez@example.com",
       phone: "641732932",
       password: "$2b$10$bD/sRHZSFF5YFcHGz0vugucarWEZ0fQMw8aLqqKh6rRI9iWeGw70m",
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.User.create({
+  await models.User.create(
+    {
+      id: 4,
       firstName: "Gregor",
       lastName: "Zupan",
       email: "gregor.zupan@example.com",
       phone: "030456330",
       password: "$2b$10$G8MxgwPWZcimkYtioVqmTOyoJAxiTpuL.J2LcU6EyiXANBVInKmnu",
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.User.create({
+  await models.User.create(
+    {
+      id: 5,
       firstName: "Tjaša",
       lastName: "Belec",
       email: "tjasa.belec@example.com",
       phone: "030452654",
       password: "$2b$10$sgIj1OIeJ6dplhvY3ipRbOoHizl1pXJKlyE3yt0QNWWZAnVzGCFmm",
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.User.create({
+  await models.User.create(
+    {
+      id: 6,
       firstName: "Matjaž",
       lastName: "Hartman",
       email: "matjaz.hartman@example.com",
       phone: "051632049",
       password: "$2b$10$uIMJoNSq7kwDwrYd9Br2wO/AYhyVmiNxGJwxMcAcqHtmY1GO0Ld5q",
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.User.create({
+  await models.User.create(
+    {
+      id: 7,
       firstName: "Anamarija",
       lastName: "Nemec",
       email: "anamarija.nemec@example.com",
       phone: "050328320",
       password: "$2b$10$YGZX3P6YtnNf2WwRJqdBYeYPhIoRBJSYuYX2exkdUAHOmqgPvBcoK",
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    /* Vehicles */
-    await models.Vehicle.create({
+  await models.User.create(
+    {
+      id: 8,
+      firstName: "Robert",
+      lastName: "Božič",
+      email: "robert.bozic@example.com",
+      phone: "040789186",
+      password: "$2b$10$IxH/2DmggIk4aKLmAqx4eOAeLbgMGUS430XJwtDyafyClHcANhe/.",
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
+
+  /* Vehicles */
+  await models.Vehicle.create(
+    {
+      id: 1,
       model: "Renault Clio",
       licencePlate: "MB DT 539",
       passengers: 4,
       baggage: 2,
       ownerId: 1,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Vehicle.create({
+  await models.Vehicle.create(
+    {
+      id: 2,
       model: "Audi A3",
       licencePlate: "LJ CDN 85",
       passengers: 4,
       baggage: 3,
       ownerId: 2,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Vehicle.create({
+  await models.Vehicle.create(
+    {
+      id: 3,
       model: "Volkswagen Polo",
       licencePlate: "MS NT 180",
       passengers: 4,
       baggage: 2,
       ownerId: 5,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Vehicle.create({
+  await models.Vehicle.create(
+    {
+      id: 4,
       model: "Ford Focus",
       licencePlate: "MS SA 342",
       passengers: 4,
       baggage: 3,
       ownerId: 5,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Vehicle.create({
+  await models.Vehicle.create(
+    {
+      id: 5,
       model: "Peugeot 308",
       licencePlate: "KP DST 13",
       passengers: 4,
       baggage: 3,
       ownerId: 6,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    /* Recurring */
-    await models.Recurring.create({
+  /* Recurring */
+  await models.Recurring.create(
+    {
+      id: 1,
       start: "Supernova 2, 4, Ankaranska cesta, Prisoje, Olmo, Koper, Upravna enota Koper, 6000, Slovenija",
       startSimple: "Koper",
       startLatitude: 45.541487399999994,
@@ -241,9 +315,15 @@ const fillDatabase = async (models) => {
       price: 8,
       userId: 6,
       vehicleId: 5,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Recurring.create({
+  await models.Recurring.create(
+    {
+      id: 2,
       start:
         "Avtobusna postaja Ljubljana, Trg Osvobodilne fronte, Zupančičeva jama, Vodmat, Ljubljana, Upravna Enota Ljubljana, 1000, Slovenija",
       startSimple: "Ljubljana",
@@ -267,9 +347,15 @@ const fillDatabase = async (models) => {
       price: 8,
       userId: 6,
       vehicleId: 5,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Recurring.create({
+  await models.Recurring.create(
+    {
+      id: 3,
       start: "Koper, Upravna enota Koper, Slovenija",
       startSimple: "Koper",
       startLatitude: 45.5479551,
@@ -290,9 +376,15 @@ const fillDatabase = async (models) => {
       sundays: false,
       offered: false,
       userId: 7,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Recurring.create({
+  await models.Recurring.create(
+    {
+      id: 4,
       start: "Ljubljana, Upravna Enota Ljubljana, Slovenija",
       startSimple: "Ljubljana",
       startLatitude: 46.0499803,
@@ -313,10 +405,16 @@ const fillDatabase = async (models) => {
       sundays: false,
       offered: false,
       userId: 7,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    /* Offers */
-    await models.Offer.create({
+  /* Offers */
+  await models.Offer.create(
+    {
+      id: 1,
       passengers: 3,
       baggage: 2,
       description:
@@ -324,9 +422,15 @@ const fillDatabase = async (models) => {
       active: true,
       driverId: 1,
       vehicleId: 1,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Offer.create({
+  await models.Offer.create(
+    {
+      id: 2,
       passengers: 3,
       baggage: 2,
       description: "",
@@ -334,18 +438,30 @@ const fillDatabase = async (models) => {
       cancellationReason: "Zaradi nujnih obveznosti moram iz Portoroža oditi nekaj dni prej. Opravičujem se za nevšečnosti.",
       driverId: 1,
       vehicleId: 1,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Offer.create({
+  await models.Offer.create(
+    {
+      id: 3,
       passengers: 2,
       baggage: 2,
       description: "Prostor samo na zadnjih sedežih. Prevoz je praviloma brez postanka.",
       active: true,
       driverId: 2,
       vehicleId: 2,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Offer.create({
+  await models.Offer.create(
+    {
+      id: 4,
       passengers: 3,
       baggage: 3,
       description: "",
@@ -353,9 +469,15 @@ const fillDatabase = async (models) => {
       recurringId: 1,
       driverId: 6,
       vehicleId: 5,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Offer.create({
+  await models.Offer.create(
+    {
+      id: 5,
       passengers: 3,
       baggage: 3,
       description: "",
@@ -363,27 +485,45 @@ const fillDatabase = async (models) => {
       recurringId: 2,
       driverId: 6,
       vehicleId: 5,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Offer.create({
+  await models.Offer.create(
+    {
+      id: 6,
       passengers: 2,
       baggage: 2,
       description: "",
       active: true,
       driverId: 5,
       vehicleId: 4,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Offer.create({
+  await models.Offer.create(
+    {
+      id: 7,
       passengers: 2,
       baggage: 2,
       description: "",
       active: true,
       driverId: 5,
       vehicleId: 4,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Offer.create({
+  await models.Offer.create(
+    {
+      id: 8,
       passengers: 3,
       baggage: 3,
       description: "",
@@ -391,9 +531,15 @@ const fillDatabase = async (models) => {
       recurringId: 1,
       driverId: 6,
       vehicleId: 5,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Offer.create({
+  await models.Offer.create(
+    {
+      id: 9,
       passengers: 3,
       baggage: 3,
       description: "",
@@ -401,9 +547,15 @@ const fillDatabase = async (models) => {
       recurringId: 2,
       driverId: 6,
       vehicleId: 5,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Offer.create({
+  await models.Offer.create(
+    {
+      id: 10,
       passengers: 3,
       baggage: 3,
       description: "",
@@ -411,9 +563,15 @@ const fillDatabase = async (models) => {
       recurringId: 1,
       driverId: 6,
       vehicleId: 5,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Offer.create({
+  await models.Offer.create(
+    {
+      id: 11,
       passengers: 3,
       baggage: 3,
       description: "",
@@ -421,9 +579,15 @@ const fillDatabase = async (models) => {
       recurringId: 2,
       driverId: 6,
       vehicleId: 5,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Offer.create({
+  await models.Offer.create(
+    {
+      id: 12,
       passengers: 3,
       baggage: 3,
       description: "",
@@ -431,9 +595,15 @@ const fillDatabase = async (models) => {
       recurringId: 1,
       driverId: 6,
       vehicleId: 5,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Offer.create({
+  await models.Offer.create(
+    {
+      id: 13,
       passengers: 3,
       baggage: 3,
       description: "",
@@ -441,46 +611,76 @@ const fillDatabase = async (models) => {
       recurringId: 2,
       driverId: 6,
       vehicleId: 5,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Offer.create({
+  await models.Offer.create(
+    {
+      id: 14,
       passengers: 2,
       baggage: 2,
       description: "",
       active: true,
       driverId: 5,
       vehicleId: 3,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Offer.create({
+  await models.Offer.create(
+    {
+      id: 15,
       passengers: 2,
       baggage: 2,
       description: "",
       active: true,
       driverId: 2,
       vehicleId: 2,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Offer.create({
+  await models.Offer.create(
+    {
+      id: 16,
       passengers: 2,
       baggage: 2,
       description: "",
       active: true,
       driverId: 2,
       vehicleId: 2,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Offer.create({
+  await models.Offer.create(
+    {
+      id: 17,
       passengers: 2,
       baggage: 2,
       description: "",
       active: true,
       driverId: 2,
       vehicleId: 2,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    /* Routes */
-    await models.Route.create({
+  /* Routes */
+  await models.Route.create(
+    {
+      id: 1,
       start: "Avtobusna postaja Maribor, Mlinska ulica, Center, Maribor, 2000, Slovenija",
       startSimple: "Maribor",
       startLatitude: 46.5596386,
@@ -492,9 +692,15 @@ const fillDatabase = async (models) => {
       departure: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 10, 0, 0, 0),
       price: 5,
       offerId: 1,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Route.create({
+  await models.Route.create(
+    {
+      id: 2,
       start: "Kristalna palača, 8, Ameriška ulica, BTC, Nove Jarše, Ljubljana, Upravna Enota Ljubljana, 1000, Slovenija",
       startSimple: "Ljubljana",
       startLatitude: 46.066573,
@@ -506,9 +712,15 @@ const fillDatabase = async (models) => {
       departure: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 12, 15, 0, 0),
       price: 10,
       offerId: 1,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Route.create({
+  await models.Route.create(
+    {
+      id: 3,
       start: "Grand Hotel Portorož, 43, Obala, Fazan, Piran, Upravna enota Piran, 6320, Slovenija",
       startSimple: "Piran",
       startLatitude: 45.514533650000004,
@@ -520,9 +732,15 @@ const fillDatabase = async (models) => {
       departure: new Date(date.addDays(6).getFullYear(), date.addDays(6).getMonth(), date.addDays(6).getDate(), 12, 0, 0, 0),
       price: 15,
       offerId: 2,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Route.create({
+  await models.Route.create(
+    {
+      id: 4,
       start:
         "Avtobusna postaja Ljubljana, Trg Osvobodilne fronte, Zupančičeva jama, Bežigrad, Ljubljana, Upravna Enota Ljubljana, 1000, Slovenija",
       startSimple: "Ljubljana",
@@ -535,9 +753,15 @@ const fillDatabase = async (models) => {
       departure: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 12, 0, 0, 0),
       price: 16,
       offerId: 3,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Route.create({
+  await models.Route.create(
+    {
+      id: 5,
       start: "Supernova 2, 4, Ankaranska cesta, Prisoje, Olmo, Koper, Upravna enota Koper, 6000, Slovenija",
       startSimple: "Koper",
       startLatitude: 45.541487399999994,
@@ -550,9 +774,15 @@ const fillDatabase = async (models) => {
       departure: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 6, 0, 0, 0),
       price: 8,
       offerId: 4,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Route.create({
+  await models.Route.create(
+    {
+      id: 6,
       start:
         "Avtobusna postaja Ljubljana, Trg Osvobodilne fronte, Zupančičeva jama, Vodmat, Ljubljana, Upravna Enota Ljubljana, 1000, Slovenija",
       startSimple: "Ljubljana",
@@ -565,9 +795,15 @@ const fillDatabase = async (models) => {
       departure: new Date(date.addDays(1).getFullYear(), date.addDays(1).getMonth(), date.addDays(1).getDate(), 17, 0, 0, 0),
       price: 8,
       offerId: 5,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Route.create({
+  await models.Route.create(
+    {
+      id: 7,
       start: "TUŠ, 36, Prešernova ulica, Ljutomer, 9240, Slovenija",
       startSimple: "Ljutomer",
       startLatitude: 46.5236801,
@@ -579,9 +815,15 @@ const fillDatabase = async (models) => {
       departure: new Date(date.addDays(3).getFullYear(), date.addDays(3).getMonth(), date.addDays(3).getDate(), 6, 0, 0, 0),
       price: 3,
       offerId: 6,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Route.create({
+  await models.Route.create(
+    {
+      id: 8,
       start: "Avtobusna postaja Maribor, Mlinska ulica, Center, Maribor, 2000, Slovenija",
       startSimple: "Maribor",
       startLatitude: 46.5596386,
@@ -594,9 +836,15 @@ const fillDatabase = async (models) => {
       departure: new Date(date.addDays(3).getFullYear(), date.addDays(3).getMonth(), date.addDays(3).getDate(), 6, 45, 0, 0),
       price: 5,
       offerId: 6,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Route.create({
+  await models.Route.create(
+    {
+      id: 9,
       start:
         "Nova KBM – Ljubljana Poslovanje s pravnimi osebami, 50, Dunajska cesta, Zupančičeva jama, Bežigrad, Ljubljana, Upravna Enota Ljubljana, 1000, Slovenija",
       startSimple: "Ljubljana",
@@ -609,9 +857,15 @@ const fillDatabase = async (models) => {
       departure: new Date(date.addDays(4).getFullYear(), date.addDays(4).getMonth(), date.addDays(4).getDate(), 17, 0, 0, 0),
       price: 8,
       offerId: 7,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Route.create({
+  await models.Route.create(
+    {
+      id: 10,
       start: "Supernova 2, 4, Ankaranska cesta, Prisoje, Olmo, Koper, Upravna enota Koper, 6000, Slovenija",
       startSimple: "Koper",
       startLatitude: 45.541487399999994,
@@ -624,9 +878,15 @@ const fillDatabase = async (models) => {
       departure: new Date(date.addDays(2).getFullYear(), date.addDays(2).getMonth(), date.addDays(2).getDate(), 6, 0, 0, 0),
       price: 8,
       offerId: 8,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Route.create({
+  await models.Route.create(
+    {
+      id: 11,
       start:
         "Avtobusna postaja Ljubljana, Trg Osvobodilne fronte, Zupančičeva jama, Vodmat, Ljubljana, Upravna Enota Ljubljana, 1000, Slovenija",
       startSimple: "Ljubljana",
@@ -639,9 +899,15 @@ const fillDatabase = async (models) => {
       departure: new Date(date.addDays(2).getFullYear(), date.addDays(2).getMonth(), date.addDays(2).getDate(), 17, 0, 0, 0),
       price: 8,
       offerId: 9,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Route.create({
+  await models.Route.create(
+    {
+      id: 12,
       start: "Supernova 2, 4, Ankaranska cesta, Prisoje, Olmo, Koper, Upravna enota Koper, 6000, Slovenija",
       startSimple: "Koper",
       startLatitude: 45.541487399999994,
@@ -654,9 +920,15 @@ const fillDatabase = async (models) => {
       departure: new Date(date.addDays(3).getFullYear(), date.addDays(3).getMonth(), date.addDays(3).getDate(), 6, 0, 0, 0),
       price: 8,
       offerId: 10,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Route.create({
+  await models.Route.create(
+    {
+      id: 13,
       start:
         "Avtobusna postaja Ljubljana, Trg Osvobodilne fronte, Zupančičeva jama, Vodmat, Ljubljana, Upravna Enota Ljubljana, 1000, Slovenija",
       startSimple: "Ljubljana",
@@ -669,9 +941,15 @@ const fillDatabase = async (models) => {
       departure: new Date(date.addDays(3).getFullYear(), date.addDays(3).getMonth(), date.addDays(3).getDate(), 17, 0, 0, 0),
       price: 8,
       offerId: 11,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Route.create({
+  await models.Route.create(
+    {
+      id: 14,
       start: "Supernova 2, 4, Ankaranska cesta, Prisoje, Olmo, Koper, Upravna enota Koper, 6000, Slovenija",
       startSimple: "Koper",
       startLatitude: 45.541487399999994,
@@ -684,9 +962,15 @@ const fillDatabase = async (models) => {
       departure: new Date(date.addDays(4).getFullYear(), date.addDays(4).getMonth(), date.addDays(4).getDate(), 6, 0, 0, 0),
       price: 8,
       offerId: 12,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Route.create({
+  await models.Route.create(
+    {
+      id: 15,
       start:
         "Avtobusna postaja Ljubljana, Trg Osvobodilne fronte, Zupančičeva jama, Vodmat, Ljubljana, Upravna Enota Ljubljana, 1000, Slovenija",
       startSimple: "Ljubljana",
@@ -699,9 +983,15 @@ const fillDatabase = async (models) => {
       departure: new Date(date.addDays(4).getFullYear(), date.addDays(4).getMonth(), date.addDays(4).getDate(), 17, 0, 0, 0),
       price: 8,
       offerId: 13,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Route.create({
+  await models.Route.create(
+    {
+      id: 16,
       start: "Hotel Žusterna, Strma pot, Žusterna, Koper, Upravna enota Koper, 6000, Slovenija",
       startSimple: "Koper",
       startLatitude: 45.545959249999996,
@@ -713,9 +1003,15 @@ const fillDatabase = async (models) => {
       departure: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 12, 0, 0, 0),
       price: 8,
       offerId: 14,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Route.create({
+  await models.Route.create(
+    {
+      id: 17,
       start: "WTC, 156, Dunajska cesta, Bratovševa ploščad, Bežigrad, Ljubljana, Upravna Enota Ljubljana, 1000, Slovenija",
       startSimple: "Ljubljana",
       startLatitude: 46.0822494,
@@ -727,9 +1023,15 @@ const fillDatabase = async (models) => {
       departure: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 14, 0, 0, 0),
       price: 8,
       offerId: 14,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Route.create({
+  await models.Route.create(
+    {
+      id: 18,
       start: "Bernardin, Upravna enota Piran, 6330, Slovenija",
       startSimple: "Bernardin",
       startLatitude: 45.5153671,
@@ -741,9 +1043,15 @@ const fillDatabase = async (models) => {
       departure: new Date(date.addDays(1).getFullYear(), date.addDays(1).getMonth(), date.addDays(1).getDate(), 10, 0, 0, 0),
       price: 10,
       offerId: 15,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Route.create({
+  await models.Route.create(
+    {
+      id: 19,
       start: "Železniška postaja Celje, Ulica XIV. divizije, Zagrad, Celje, 3000, Slovenija",
       startSimple: "Celje",
       startLatitude: 46.22847215,
@@ -755,9 +1063,15 @@ const fillDatabase = async (models) => {
       departure: new Date(date.addDays(1).getFullYear(), date.addDays(1).getMonth(), date.addDays(1).getDate(), 14, 30, 0, 0),
       price: 3,
       offerId: 15,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Route.create({
+  await models.Route.create(
+    {
+      id: 20,
       start: "Avtobusna postaja Maribor, Mlinska ulica, Center, Maribor, 2000, Slovenija",
       startSimple: "Maribor",
       startLatitude: 46.5596386,
@@ -769,9 +1083,15 @@ const fillDatabase = async (models) => {
       departure: new Date(date.addDays(2).getFullYear(), date.addDays(2).getMonth(), date.addDays(2).getDate(), 8, 0, 0, 0),
       price: 3,
       offerId: 16,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Route.create({
+  await models.Route.create(
+    {
+      id: 21,
       start: "MERKUR Celje Hudinja, 162, Mariborska cesta, Slance, Celje, 3000, Slovenija",
       startSimple: "Celje",
       startLatitude: 46.24946715,
@@ -783,9 +1103,15 @@ const fillDatabase = async (models) => {
       departure: new Date(date.addDays(2).getFullYear(), date.addDays(2).getMonth(), date.addDays(2).getDate(), 9, 0, 0, 0),
       price: 9,
       offerId: 16,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Route.create({
+  await models.Route.create(
+    {
+      id: 22,
       start: "6, Šmarješka cesta, Mačkovec, Novo mesto, 8000, Slovenija",
       startSimple: "Novo mesto",
       startLatitude: 45.8238026,
@@ -797,9 +1123,15 @@ const fillDatabase = async (models) => {
       departure: new Date(date.addDays(2).getFullYear(), date.addDays(2).getMonth(), date.addDays(2).getDate(), 18, 0, 0, 0),
       price: 9,
       offerId: 17,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Route.create({
+  await models.Route.create(
+    {
+      id: 23,
       start: "MERKUR Celje Hudinja, 162, Mariborska cesta, Slance, Celje, 3000, Slovenija",
       startSimple: "Celje",
       startLatitude: 46.24946715,
@@ -811,63 +1143,116 @@ const fillDatabase = async (models) => {
       departure: new Date(date.addDays(2).getFullYear(), date.addDays(2).getMonth(), date.addDays(2).getDate(), 21, 15, 0, 0),
       price: 6,
       offerId: 17,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    /* Reservations */
-    await models.Reservation.create({
+  /* Reservations */
+  await models.Reservation.create(
+    {
+      id: 1,
       passengers: 1,
       baggage: 1,
       active: true,
       userId: 3,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Reservation.create({
+  await models.Reservation.create(
+    {
+      id: 2,
       passengers: 1,
       baggage: 1,
       active: true,
       userId: 4,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Reservation.create({
+  await models.Reservation.create(
+    {
+      id: 3,
       passengers: 1,
       baggage: 1,
       active: true,
       userId: 4,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.Reservation.create({
+  await models.Reservation.create(
+    {
+      id: 4,
       passengers: 1,
       baggage: 1,
       active: true,
       userId: 7,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    /* Route reservations */
-    await models.RouteReservation.create({
+  /* Route reservations */
+  await models.RouteReservation.create(
+    {
+      id: 5,
       reservationId: 1,
       routeId: 2,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.RouteReservation.create({
+  await models.RouteReservation.create(
+    {
       reservationId: 2,
       routeId: 1,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.RouteReservation.create({
+  await models.RouteReservation.create(
+    {
       reservationId: 2,
       routeId: 2,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.RouteReservation.create({
+  await models.RouteReservation.create(
+    {
       reservationId: 3,
       routeId: 3,
-    });
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 
-    await models.RouteReservation.create({
+  await models.RouteReservation.create(
+    {
       reservationId: 4,
       routeId: 5,
-    });
-  }
+    },
+    {
+      ignoreDuplicates: true,
+    }
+  );
 };
 
 module.exports = {
