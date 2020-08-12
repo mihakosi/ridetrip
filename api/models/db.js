@@ -1253,6 +1253,14 @@ const fillDatabase = async (models) => {
       ignoreDuplicates: true,
     }
   );
+
+  /* Reset primary key sequences */
+  await sequelize.query(`SELECT setval('users_id_seq', (SELECT MAX(id) FROM users));`);
+  await sequelize.query(`SELECT setval('vehicles_id_seq', (SELECT MAX(id) FROM users));`);
+  await sequelize.query(`SELECT setval('recurrings_id_seq', (SELECT MAX(id) FROM users));`);
+  await sequelize.query(`SELECT setval('offers_id_seq', (SELECT MAX(id) FROM users));`);
+  await sequelize.query(`SELECT setval('routes_id_seq', (SELECT MAX(id) FROM users));`);
+  await sequelize.query(`SELECT setval('reservations_id_seq', (SELECT MAX(id) FROM users));`);
 };
 
 module.exports = {

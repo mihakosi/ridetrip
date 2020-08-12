@@ -43,8 +43,12 @@ export class SearchComponent implements OnInit {
     message: "",
   };
 
+  public isMobile: boolean = false;
+
   searchRides(): void {
-    this.search.date = new Date(this.search.year, this.search.month - 1, this.search.day, this.search.hours, this.search.minutes);
+    if (!this.isMobile) {
+      this.search.date = new Date(this.search.year, this.search.month - 1, this.search.day, this.search.hours, this.search.minutes);
+    }
 
     if (!this.search.startLatitude || !this.search.startLongitude) {
       this.error.type = "danger";
@@ -129,6 +133,12 @@ export class SearchComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Detect mobile devices
+    var userAgent = navigator.userAgent || navigator.vendor;
+    if (/windows phone/i.test(userAgent) || /android/i.test(userAgent) || (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream)) {
+      this.isMobile = true;
+    }
+
     // Generate days
     for (var i = 1; i <= 31; i++) {
       this.days.push(i.toString());

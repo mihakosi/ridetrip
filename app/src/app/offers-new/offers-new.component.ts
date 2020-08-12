@@ -67,6 +67,7 @@ export class OffersNewComponent implements OnInit {
         startSimple: "",
         startLatitude: 0.0,
         startLongitude: 0.0,
+        date: null,
         day: null,
         month: null,
         year: null,
@@ -81,12 +82,15 @@ export class OffersNewComponent implements OnInit {
     endLongitude: 0.0,
   };
 
+  public isMobile: boolean = false;
+
   addStop(): void {
     this.offer.stops.push({
       start: "",
       startSimple: "",
       startLatitude: 0.0,
       startLongitude: 0.0,
+      date: null,
       day: null,
       month: null,
       year: null,
@@ -187,6 +191,16 @@ export class OffersNewComponent implements OnInit {
     let routes = [];
 
     for (var i = 0; i < this.offer.stops.length; i++) {
+      if (!this.isMobile) {
+        this.offer.stops[i].date = new Date(
+          this.offer.stops[i].year,
+          this.offer.stops[i].month - 1,
+          this.offer.stops[i].day,
+          this.offer.stops[i].hours,
+          this.offer.stops[i].minutes
+        );
+      }
+
       if (i == this.offer.stops.length - 1) {
         let route = {
           start: this.offer.stops[i].start,
@@ -197,13 +211,7 @@ export class OffersNewComponent implements OnInit {
           endSimple: this.offer.endSimple,
           endLatitude: this.offer.endLatitude,
           endLongitude: this.offer.endLongitude,
-          departure: new Date(
-            this.offer.stops[i].year,
-            this.offer.stops[i].month - 1,
-            this.offer.stops[i].day,
-            this.offer.stops[i].hours,
-            this.offer.stops[i].minutes
-          ),
+          departure: this.offer.stops[i].date,
           price: this.offer.stops[i].price,
         };
 
@@ -218,13 +226,7 @@ export class OffersNewComponent implements OnInit {
           endSimple: this.offer.stops[i + 1].startSimple,
           endLatitude: this.offer.stops[i + 1].startLatitude,
           endLongitude: this.offer.stops[i + 1].startLongitude,
-          departure: new Date(
-            this.offer.stops[i].year,
-            this.offer.stops[i].month - 1,
-            this.offer.stops[i].day,
-            this.offer.stops[i].hours,
-            this.offer.stops[i].minutes
-          ),
+          departure: this.offer.stops[i].date,
           price: this.offer.stops[i].price,
         };
 
@@ -247,6 +249,12 @@ export class OffersNewComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Detect mobile devices
+    var userAgent = navigator.userAgent || navigator.vendor;
+    if (/windows phone/i.test(userAgent) || /android/i.test(userAgent) || (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream)) {
+      this.isMobile = true;
+    }
+
     // Generate days
     for (var i = 1; i <= 31; i++) {
       this.days.push(i.toString());

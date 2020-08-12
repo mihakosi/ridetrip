@@ -17,7 +17,7 @@
       <div class="form-group" *ngIf="day.rides.length > 0">
         <h6>{{ day.date | date: "EEEE, d. M. yyyy" | titlecase }}</h6>
         <ul class="list-group my-2">
-          <a routerLink="" class="list-group-item" *ngFor="let ride of day.rides" (click)="searchRides(day.date, ride)">
+          <li class="list-group-item" *ngFor="let ride of day.rides">
             <div class="row align-items-center justify-content-between">
               <div class="col">
                 <p class="mb-1">
@@ -25,14 +25,20 @@
                 </p>
                 <small class="text-secondary">{{ ride.departure.split(":")[0] }}:{{ ride.departure.split(":")[1] }}</small>
               </div>
+              <div class="col-auto">
+                <button class="btn btn-primary floating" (click)="searchRides(day.date, ride)">
+                  <span class="search-icon"></span>
+                </button>
+              </div>
             </div>
-          </a>
+          </li>
         </ul>
       </div>
     </ng-container>
     <div class="text-center text-secondary" *ngIf="days.length == 0">
       <h1><i class="fas fa-car"></i></h1>
       <p>Na voljo ni ponavljajočih prevozov.</p>
+      <p><a routerLink="/recurring/manage/rides/new">Dodaj ponavljajoči prevoz</a></p>
     </div>
   </ng-container>
 </div>

@@ -38,7 +38,7 @@ const getDestinations = (req, res) => {
       },
       group: ["routes.id"],
       having: sequelize.literal(
-        `point(${req.query.longitude}, ${req.query.latitude}) <@> point("routes"."startLongitude", "routes"."startLatitude")::point < 6`
+        `point(${req.query.longitude}, ${req.query.latitude}) <@> point("routes"."startLongitude", "routes"."startLatitude")::point < 18`
       ),
     })
       .then((destinations) => {

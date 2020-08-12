@@ -57,28 +57,38 @@
               <div class="route">
                 <div class="pb-2">
                   <div class="form-group">
-                    <label for="day_0">Kdaj odrineš od tam?</label>
-                    <div class="row">
-                      <div class="col-auto mb-2">
-                        <select class="form-control date-input mr-2" id="day_0" [(ngModel)]="offer.stops[0].day" name="day_0">
-                          <option *ngFor="let day of days" value="{{ day }}">{{ day }}</option>
-                        </select>
-                        <select class="form-control date-input mr-2" id="month_0" [(ngModel)]="offer.stops[0].month" name="month_0">
-                          <option *ngFor="let month of months" value="{{ month }}">{{ month }}</option>
-                        </select>
-                        <select class="form-control date-input-xl mr-2" id="year_0" [(ngModel)]="offer.stops[0].year" name="year_0">
-                          <option *ngFor="let year of years" value="{{ year }}">{{ year }}</option>
-                        </select>
+                    <ng-container *ngIf="isMobile">
+                      <label for="day_0">Kdaj greš?</label>
+                      <div class="row">
+                        <div class="col-12">
+                          <input [(ngModel)]="offer.stops[0].date" type="datetime-local" class="form-control" id="date_0" name="date_0" />
+                        </div>
                       </div>
-                      <div class="col-auto">
-                        <select class="form-control date-input mr-2" id="hours_0" [(ngModel)]="offer.stops[0].hours" name="hours_0">
-                          <option *ngFor="let hour of hours" value="{{ hour }}">{{ hour }}</option>
-                        </select>
-                        <select class="form-control date-input mr-2" id="minutes_0" [(ngModel)]="offer.stops[0].minutes" name="minutes_0">
-                          <option *ngFor="let minute of minutes" value="{{ minute }}">{{ minute }}</option>
-                        </select>
+                    </ng-container>
+                    <ng-container *ngIf="!isMobile">
+                      <label for="day_0">Kdaj odrineš od tam?</label>
+                      <div class="row">
+                        <div class="col-auto mb-2">
+                          <select class="form-control date-input mr-2" id="day_0" [(ngModel)]="offer.stops[0].day" name="day_0">
+                            <option *ngFor="let day of days" value="{{ day }}">{{ day }}</option>
+                          </select>
+                          <select class="form-control date-input mr-2" id="month_0" [(ngModel)]="offer.stops[0].month" name="month_0">
+                            <option *ngFor="let month of months" value="{{ month }}">{{ month }}</option>
+                          </select>
+                          <select class="form-control date-input-xl mr-2" id="year_0" [(ngModel)]="offer.stops[0].year" name="year_0">
+                            <option *ngFor="let year of years" value="{{ year }}">{{ year }}</option>
+                          </select>
+                        </div>
+                        <div class="col-auto">
+                          <select class="form-control date-input mr-2" id="hours_0" [(ngModel)]="offer.stops[0].hours" name="hours_0">
+                            <option *ngFor="let hour of hours" value="{{ hour }}">{{ hour }}</option>
+                          </select>
+                          <select class="form-control date-input mr-2" id="minutes_0" [(ngModel)]="offer.stops[0].minutes" name="minutes_0">
+                            <option *ngFor="let minute of minutes" value="{{ minute }}">{{ minute }}</option>
+                          </select>
+                        </div>
                       </div>
-                    </div>
+                    </ng-container>
                   </div>
                   <div class="form-group">
                     <label for="price_0">Kolikšni so skupni stroški prevoza na tem delu poti?</label>
@@ -146,53 +156,69 @@
                     <div class="route">
                       <div class="pb-2">
                         <div class="form-group">
-                          <label for="day_{{ i }}">Kdaj odrineš od tam?</label>
-                          <div class="row">
-                            <div class="col-auto mb-2">
-                              <select
-                                class="form-control date-input mr-2"
-                                id="day_{{ i }}"
-                                [(ngModel)]="offer.stops[i].day"
-                                name="day_{{ i }}"
-                              >
-                                <option *ngFor="let day of days" value="{{ day }}">{{ day }}</option>
-                              </select>
-                              <select
-                                class="form-control date-input mr-2"
-                                id="month_{{ i }}"
-                                [(ngModel)]="offer.stops[i].month"
-                                name="month_{{ i }}"
-                              >
-                                <option *ngFor="let month of months" value="{{ month }}">{{ month }}</option>
-                              </select>
-                              <select
-                                class="form-control date-input-xl mr-2"
-                                id="year_{{ i }}"
-                                [(ngModel)]="offer.stops[i].year"
-                                name="year_{{ i }}"
-                              >
-                                <option *ngFor="let year of years" value="{{ year }}">{{ year }}</option>
-                              </select>
+                          <ng-container *ngIf="isMobile">
+                            <label for="day_{{ i }}">Kdaj greš?</label>
+                            <div class="row">
+                              <div class="col-12">
+                                <input
+                                  [(ngModel)]="offer.stops[i].date"
+                                  type="datetime-local"
+                                  class="form-control"
+                                  id="date_{{ i }}"
+                                  name="date_{{ i }}"
+                                />
+                              </div>
                             </div>
-                            <div class="col-auto">
-                              <select
-                                class="form-control date-input mr-2"
-                                id="hours_{{ i }}"
-                                [(ngModel)]="offer.stops[i].hours"
-                                name="hours_{{ i }}"
-                              >
-                                <option *ngFor="let hour of hours" value="{{ hour }}">{{ hour }}</option>
-                              </select>
-                              <select
-                                class="form-control date-input mr-2"
-                                id="minutes_{{ i }}"
-                                [(ngModel)]="offer.stops[i].minutes"
-                                name="minutes_{{ i }}"
-                              >
-                                <option *ngFor="let minute of minutes" value="{{ minute }}">{{ minute }}</option>
-                              </select>
+                          </ng-container>
+                          <ng-container *ngIf="!isMobile">
+                            <label for="day_{{ i }}">Kdaj odrineš od tam?</label>
+                            <div class="row">
+                              <div class="col-auto mb-2">
+                                <select
+                                  class="form-control date-input mr-2"
+                                  id="day_{{ i }}"
+                                  [(ngModel)]="offer.stops[i].day"
+                                  name="day_{{ i }}"
+                                >
+                                  <option *ngFor="let day of days" value="{{ day }}">{{ day }}</option>
+                                </select>
+                                <select
+                                  class="form-control date-input mr-2"
+                                  id="month_{{ i }}"
+                                  [(ngModel)]="offer.stops[i].month"
+                                  name="month_{{ i }}"
+                                >
+                                  <option *ngFor="let month of months" value="{{ month }}">{{ month }}</option>
+                                </select>
+                                <select
+                                  class="form-control date-input-xl mr-2"
+                                  id="year_{{ i }}"
+                                  [(ngModel)]="offer.stops[i].year"
+                                  name="year_{{ i }}"
+                                >
+                                  <option *ngFor="let year of years" value="{{ year }}">{{ year }}</option>
+                                </select>
+                              </div>
+                              <div class="col-auto">
+                                <select
+                                  class="form-control date-input mr-2"
+                                  id="hours_{{ i }}"
+                                  [(ngModel)]="offer.stops[i].hours"
+                                  name="hours_{{ i }}"
+                                >
+                                  <option *ngFor="let hour of hours" value="{{ hour }}">{{ hour }}</option>
+                                </select>
+                                <select
+                                  class="form-control date-input mr-2"
+                                  id="minutes_{{ i }}"
+                                  [(ngModel)]="offer.stops[i].minutes"
+                                  name="minutes_{{ i }}"
+                                >
+                                  <option *ngFor="let minute of minutes" value="{{ minute }}">{{ minute }}</option>
+                                </select>
+                              </div>
                             </div>
-                          </div>
+                          </ng-container>
                         </div>
                         <div class="form-group">
                           <label for="price_{{ i }}">Kolikšni so skupni stroški prevoza na tem delu poti?</label>
@@ -247,7 +273,9 @@
         <div class="form-group">
           <label for="baggage">Za koliko prtljage imaš prostora?</label>
           <input type="number" class="form-control" id="baggage" min="0" [(ngModel)]="offer.baggage" name="baggage" />
-          <small class="form-text text-muted">Za en kos prtljage se upošteva okvirna velikost kovčka v ročni prtljagi na letalu.</small>
+          <small class="form-text text-muted">
+            Za en kos prtljage se upošteva okvirna velikost kovčka v ročni prtljagi na letalu (okrog 55x45x25 cm).
+          </small>
         </div>
         <div class="form-group">
           <label for="description">Želiš potnikom sporočiti še kaj?</label>

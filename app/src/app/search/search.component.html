@@ -29,28 +29,38 @@
       <small *ngIf="endSearch.message" class="text-danger">{{ endSearch.message }}</small>
     </div>
     <div class="form-group">
-      <label for="day">Kdaj greš?</label>
-      <div class="row">
-        <div class="col-auto mb-2">
-          <select class="form-control date-input mr-2" id="day" [(ngModel)]="search.day" name="day">
-            <option *ngFor="let day of days" value="{{ day }}">{{ day }}</option>
-          </select>
-          <select class="form-control date-input mr-2" id="month" [(ngModel)]="search.month" name="month">
-            <option *ngFor="let month of months" value="{{ month }}">{{ month }}</option>
-          </select>
-          <select class="form-control date-input-xl mr-2" id="year" [(ngModel)]="search.year" name="year">
-            <option *ngFor="let year of years" value="{{ year }}">{{ year }}</option>
-          </select>
+      <ng-container *ngIf="isMobile">
+        <label for="day">Kdaj greš?</label>
+        <div class="row">
+          <div class="col-12">
+            <input [(ngModel)]="search.date" type="datetime-local" class="form-control" id="date" name="date" />
+          </div>
         </div>
-        <div class="col-auto">
-          <select class="form-control date-input mr-2" id="hours" [(ngModel)]="search.hours" name="hours">
-            <option *ngFor="let hour of hours" value="{{ hour }}">{{ hour }}</option>
-          </select>
-          <select class="form-control date-input mr-2" id="minutes" [(ngModel)]="search.minutes" name="minutes">
-            <option *ngFor="let minute of minutes" value="{{ minute }}">{{ minute }}</option>
-          </select>
+      </ng-container>
+      <ng-container *ngIf="!isMobile">
+        <label for="day">Kdaj greš?</label>
+        <div class="row">
+          <div class="col-auto mb-2">
+            <select class="form-control date-input mr-2" id="day" [(ngModel)]="search.day" name="day">
+              <option *ngFor="let day of days" value="{{ day }}">{{ day }}</option>
+            </select>
+            <select class="form-control date-input mr-2" id="month" [(ngModel)]="search.month" name="month">
+              <option *ngFor="let month of months" value="{{ month }}">{{ month }}</option>
+            </select>
+            <select class="form-control date-input-xl mr-2" id="year" [(ngModel)]="search.year" name="year">
+              <option *ngFor="let year of years" value="{{ year }}">{{ year }}</option>
+            </select>
+          </div>
+          <div class="col-auto">
+            <select class="form-control date-input mr-2" id="hours" [(ngModel)]="search.hours" name="hours">
+              <option *ngFor="let hour of hours" value="{{ hour }}">{{ hour }}</option>
+            </select>
+            <select class="form-control date-input mr-2" id="minutes" [(ngModel)]="search.minutes" name="minutes">
+              <option *ngFor="let minute of minutes" value="{{ minute }}">{{ minute }}</option>
+            </select>
+          </div>
         </div>
-      </div>
+      </ng-container>
     </div>
     <div class="form-group">
       <label for="passengers">Koliko oseb gre?</label>
@@ -59,7 +69,9 @@
     <div class="form-group">
       <label for="baggage">Koliko prtljage imaš?</label>
       <input [(ngModel)]="search.baggage" type="number" class="form-control" id="baggage" name="baggage" min="0" />
-      <small class="form-text text-muted">Za en kos prtljage se upošteva okvirna velikost kovčka v ročni prtljagi na letalu.</small>
+      <small class="form-text text-muted">
+        Za en kos prtljage se upošteva okvirna velikost kovčka v ročni prtljagi na letalu (okrog 55x45x25 cm).
+      </small>
     </div>
     <div class="alert alert-{{ error.type }}" *ngIf="error.type">
       <p class="m-0">{{ error.message }}</p>

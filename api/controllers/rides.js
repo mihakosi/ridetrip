@@ -31,7 +31,7 @@ const getRides = (req, res) => {
     let tomorrow = new Date(new Date(req.query.date).setHours(0, 0, 0, 0));
     tomorrow.setDate(tomorrow.getDate() + 1);
 
-    // Get offers that have stops located within 6 miles of provided start and end location
+    // Get offers that have stops located within 18 miles of provided start and end location
     Offer.findAll({
       attributes: ["id", "passengers", "baggage"],
       include: [
@@ -78,12 +78,12 @@ const getRides = (req, res) => {
             [Sequelize.Op.and]: [
               {
                 startDistance: {
-                  [Sequelize.Op.lt]: 6,
+                  [Sequelize.Op.lt]: 18,
                 },
               },
               {
                 endDistance: {
-                  [Sequelize.Op.lt]: 6,
+                  [Sequelize.Op.lt]: 18,
                 },
               },
             ],
@@ -154,7 +154,7 @@ const getRides = (req, res) => {
           ride.routes = routes;
           ride.price = price;
 
-          if (!notEnoughSpace && minStartDistance < 6 && minEndDistance < 6) {
+          if (!notEnoughSpace && minStartDistance < 18 && minEndDistance < 18) {
             availableRides.push(ride);
           }
         });

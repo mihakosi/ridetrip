@@ -27,10 +27,10 @@
       <div class="form-group">
         <label for="baggage">Za koliko prtljage je prostora v vozilu?</label>
         <input [(ngModel)]="vehicle.baggage" type="number" class="form-control" id="baggage" name="baggage" min="0" />
-        <small class="form-text text-muted"
-          >Največje število kosov prtljage v okvirni velikosti kovčka v ročni prtljagi na letalu, ki se lahko pelje v vozilu. Vrednost je
-          možno prilagoditi za posamezen prevoz.</small
-        >
+        <small class="form-text text-muted">
+          Za en kos prtljage se upošteva okvirna velikost kovčka v ročni prtljagi na letalu (okrog 55x45x25 cm). Vrednost je možno
+          prilagoditi za posamezen prevoz.
+        </small>
       </div>
       <div class="alert alert-{{ error.type }}" *ngIf="error.type && error.type != 'data' && error.type != 'loading'">
         <p class="m-0">{{ error.message }}</p>
