@@ -432,6 +432,14 @@ a {
   background-color: #14a200;
 }
 
+.main a.list-group-item {
+  text-decoration: none;
+}
+
+.main a.list-group-item:hover {
+  background: #fcfcfc;
+}
+
 .main .list-group-item:first-child {
   border-top-left-radius: 2px;
   border-top-right-radius: 2px;

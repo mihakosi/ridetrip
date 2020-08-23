@@ -12,7 +12,7 @@ require("./api/models/db");
 app.use(express.json());
 
 app.use("/api", (req, res, next) => {
-  res.header("Cache-Control", "max-age=3600");
+  res.header("Cache-Control", "max-age=no-cache");
   res.header("Access-Control-Allow-Origin", "http://localhost:4200");
   res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");

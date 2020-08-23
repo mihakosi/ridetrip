@@ -10,6 +10,7 @@ import { OffersService } from "../offers.service";
 import { NominatimService } from "../nominatim.service";
 import { ReservationsService } from "../reservations.service";
 import { DestinationsService } from "../destinations.service";
+import { AuthenticationService } from "../authentication.service";
 
 @Component({
   selector: "app-map",
@@ -25,7 +26,8 @@ export class MapComponent implements OnInit {
     private offersService: OffersService,
     private nominatimService: NominatimService,
     private reservationsService: ReservationsService,
-    private destinationsService: DestinationsService
+    private destinationsService: DestinationsService,
+    private authenticationService: AuthenticationService
   ) {}
 
   destinations: any[] = [];
@@ -51,40 +53,42 @@ export class MapComponent implements OnInit {
   }
 
   shareLocation(): void {
-    var locationPin = L.icon({
-      iconUrl: "/assets/images/location.svg",
-      iconSize: [40, 40],
-      iconAnchor: [20, 20],
-      popupAnchor: [0, -20],
-    });
+    if (this.authenticationService.isSignedIn()) {
+      var locationPin = L.icon({
+        iconUrl: "/assets/images/location.svg",
+        iconSize: [40, 40],
+        iconAnchor: [20, 20],
+        popupAnchor: [0, -20],
+      });
 
-    this.watchPosition = navigator.geolocation.watchPosition(
-      (position) => {
-        this.location = {
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-        };
+      this.watchPosition = navigator.geolocation.watchPosition(
+        (position) => {
+          this.location = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          };
 
-        if (this.userMarker) {
-          // Update user marker
-          this.userMarker.setLatLng(new L.LatLng(position.coords.latitude, position.coords.longitude));
-        } else {
-          // Set user marker
-          this.userMarker = L.marker([this.location.latitude, this.location.longitude], { icon: locationPin });
-          this.userMarker.addTo(this.map);
+          if (this.userMarker) {
+            // Update user marker
+            this.userMarker.setLatLng(new L.LatLng(position.coords.latitude, position.coords.longitude));
+          } else {
+            // Set user marker
+            this.userMarker = L.marker([this.location.latitude, this.location.longitude], { icon: locationPin });
+            this.userMarker.addTo(this.map);
+          }
+
+          this.getLatestReservation();
+        },
+        (error) => {
+          this.errorService.onGetError.emit({ message: "Lokacije ni mogoče pridobiti.", type: "danger" });
+        },
+        {
+          enableHighAccuracy: false,
+          timeout: 30000,
+          maximumAge: 5000,
         }
-
-        this.getLatestReservation();
-      },
-      (error) => {
-        this.errorService.onGetError.emit({ message: "Lokacije ni mogoče pridobiti.", type: "danger" });
-      },
-      {
-        enableHighAccuracy: false,
-        timeout: 30000,
-        maximumAge: 5000,
-      }
-    );
+      );
+    }
   }
 
   stopShareLocation(): void {
