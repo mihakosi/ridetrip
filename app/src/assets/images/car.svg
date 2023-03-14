@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;">
+    <g transform="matrix(1.03347,0,0,1.03347,-1.64942,-1.33037)">
+        <circle cx="20.948" cy="20.639" r="17.42" style="fill:rgb(235,235,235);stroke:white;stroke-width:3.34px;"/>
+    </g>
+    <g id="car" transform="matrix(0.694441,0,0,0.694441,20,20)">
+        <g transform="matrix(1,0,0,1,-18,-18)">
+            <g transform="matrix(1,0,0,1,0,-6.5)">
+                <path d="M2,32L33,32C33,32 36,32 36,28C36,26 36,22 35,21C34,20 27,14 24,14L18,14C15,14 8,21 8,21L4,22C4,22 1,23 1,25L1,28C1,28 0,28.338 0,29.957C0,32 2,32 2,32Z" style="fill:rgb(221,46,68);fill-rule:nonzero;"/>
+            </g>
+            <g transform="matrix(1,0,0,1,0,-6.5)">
+                <path d="M20,16L18,16C16,16 10,22 10,22C10,22 14.997,21.737 20,21.481L20,16ZM30,19C29,18 25,16 23,16L22,16L22,21.379C26.011,21.175 29.582,21 30,21C31,21 31,20 30,19Z" style="fill:rgb(187,221,245);fill-rule:nonzero;"/>
+            </g>
+            <g transform="matrix(1,0,0,1,0,-6.5)">
+                <circle cx="10" cy="31" r="4" style="fill:rgb(41,47,51);"/>
+            </g>
+            <g transform="matrix(1,0,0,1,0,-6.5)">
+                <circle cx="10" cy="31" r="2" style="fill:rgb(204,214,221);"/>
+            </g>
+            <g transform="matrix(1,0,0,1,0,-6.5)">
+                <circle cx="27" cy="31" r="4" style="fill:rgb(41,47,51);"/>
+            </g>
+            <g transform="matrix(1,0,0,1,0,-6.5)">
+                <circle cx="27" cy="31" r="2" style="fill:rgb(204,214,221);"/>
+            </g>
+        </g>
+    </g>
+</svg>

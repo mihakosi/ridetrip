@@ -1,0 +1,46 @@
+<div class="container my-3">
+  <div class="d-flex">
+    <h3 class="mb-0">Moji prevozi</h3>
+  </div>
+</div>
+<div class="container my-3">
+  <ul class="nav nav-line mb-3">
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/reservations">Rezervacije</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link active" routerLink="/offers">Ponujeni prevozi</a>
+    </li>
+  </ul>
+  <ng-container *ngIf="offers">
+    <ul class="list-group mt-2" *ngIf="offers.length > 0">
+      <a routerLink="/offers/{{ offer.id }}" class="list-group-item" *ngFor="let offer of offers">
+        <div class="row align-items-end justify-content-between">
+          <div class="col">
+            <p class="mb-1">
+              <strong>{{ offer.routes[0].startSimple }}</strong> - <strong>{{ offer.routes[offer.routes.length - 1].endSimple }}</strong>
+            </p>
+            <small class="text-secondary">{{ offer.routes[0].departure | date: "d. M. yyyy, H:mm" }}</small>
+          </div>
+          <div class="col-auto text-right">
+            <small class="text-secondary" *ngIf="!offer.active">Prevoz preklican</small>
+          </div>
+        </div>
+      </a>
+    </ul>
+    <div class="text-center text-secondary" *ngIf="offers.length == 0">
+      <h1><i class="fas fa-car"></i></h1>
+      <p>Nimaš aktivnih ponujenih prevozov.</p>
+    </div>
+  </ng-container>
+  <a routerLink="/offers/new" class="btn btn-floating btn-primary">
+    <span class="plus-icon"></span>
+  </a>
+</div>
+<div *ngIf="!offers && !error.type">
+  <div class="loader"></div>
+</div>
+<div class="text-center text-secondary" *ngIf="error.type">
+  <h1><i class="fas fa-car"></i></h1>
+  <p>{{ error.message }}</p>
+</div>

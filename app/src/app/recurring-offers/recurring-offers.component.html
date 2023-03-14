@@ -1,0 +1,51 @@
+<div class="container my-3">
+  <div class="d-flex">
+    <h3 class="mb-0">Ponavljajoči prevozi</h3>
+  </div>
+</div>
+<div class="container my-3">
+  <ng-container *ngIf="days">
+    <ul class="nav nav-line mb-3">
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/recurring/rides">Iščem</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link active" routerLink="/recurring/offers">Ponujam</a>
+      </li>
+    </ul>
+    <ng-container *ngFor="let day of days">
+      <div class="form-group" *ngIf="day.offers.length > 0">
+        <h6>{{ day.date | date: "EEEE, d. M. yyyy" | titlecase }}</h6>
+        <ul class="list-group my-2">
+          <li class="list-group-item" *ngFor="let offer of day.offers">
+            <div class="row align-items-center justify-content-between">
+              <div class="col">
+                <p class="mb-1">
+                  <strong>{{ offer.startSimple }}</strong> - <strong>{{ offer.endSimple }}</strong>
+                </p>
+                <small class="text-secondary">{{ offer.departure.split(":")[0] }}:{{ offer.departure.split(":")[1] }}</small>
+              </div>
+              <div class="col-auto">
+                <button class="btn btn-primary floating" (click)="createOffer(day.date, offer)">
+                  <span class="plus-icon"></span>
+                </button>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </ng-container>
+    <div class="text-center text-secondary" *ngIf="days.length == 0 || (error.type && error.type === 'empty')">
+      <h1><i class="fas fa-car"></i></h1>
+      <p>Na voljo ni ponavljajočih prevozov.</p>
+      <p><a routerLink="/recurring/manage/offers">Nastavitve ponavljajočih prevozov</a></p>
+    </div>
+  </ng-container>
+</div>
+<div *ngIf="!days && !error.type">
+  <div class="loader"></div>
+</div>
+<div class="text-center text-secondary" *ngIf="error.type && error.type === 'data'">
+  <h1><i class="fas fa-car"></i></h1>
+  <p>{{ error.message }}</p>
+</div>

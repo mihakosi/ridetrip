@@ -1,0 +1,83 @@
+<div class="container my-3">
+  <div class="d-flex">
+    <a routerLink="/" class="navbar-toggler p-0 mr-3">
+      <span class="back-icon"></span>
+    </a>
+    <h3 class="mb-0">Poišči prevoz</h3>
+  </div>
+</div>
+<div class="container my-3">
+  <form (ngSubmit)="searchRides()" role="form">
+    <div class="form-group">
+      <label for="start">Od kod greš?</label>
+      <input
+        [(ngModel)]="search.start"
+        type="text"
+        class="form-control"
+        id="start"
+        name="start"
+        data-type="start"
+        (focusout)="getSearch($event)"
+      />
+      <small *ngIf="startSearch.loading">Iskanje lokacije ...</small>
+      <small *ngIf="startSearch.message" class="text-danger">{{ startSearch.message }}</small>
+    </div>
+    <div class="form-group">
+      <label for="end">Kam greš?</label>
+      <input [(ngModel)]="search.end" type="text" class="form-control" id="end" name="end" data-type="end" (focusout)="getSearch($event)" />
+      <small *ngIf="endSearch.loading">Iskanje lokacije ...</small>
+      <small *ngIf="endSearch.message" class="text-danger">{{ endSearch.message }}</small>
+    </div>
+    <div class="form-group">
+      <ng-container *ngIf="isMobile">
+        <label for="day">Kdaj greš?</label>
+        <div class="row">
+          <div class="col-12">
+            <input [(ngModel)]="search.date" type="datetime-local" class="form-control" id="date" name="date" />
+          </div>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="!isMobile">
+        <label for="day">Kdaj greš?</label>
+        <div class="row">
+          <div class="col-auto mb-2">
+            <select class="form-control date-input mr-2" id="day" [(ngModel)]="search.day" name="day">
+              <option *ngFor="let day of days" value="{{ day }}">{{ day }}</option>
+            </select>
+            <select class="form-control date-input mr-2" id="month" [(ngModel)]="search.month" name="month">
+              <option *ngFor="let month of months" value="{{ month }}">{{ month }}</option>
+            </select>
+            <select class="form-control date-input-xl mr-2" id="year" [(ngModel)]="search.year" name="year">
+              <option *ngFor="let year of years" value="{{ year }}">{{ year }}</option>
+            </select>
+          </div>
+          <div class="col-auto">
+            <select class="form-control date-input mr-2" id="hours" [(ngModel)]="search.hours" name="hours">
+              <option *ngFor="let hour of hours" value="{{ hour }}">{{ hour }}</option>
+            </select>
+            <select class="form-control date-input mr-2" id="minutes" [(ngModel)]="search.minutes" name="minutes">
+              <option *ngFor="let minute of minutes" value="{{ minute }}">{{ minute }}</option>
+            </select>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+    <div class="form-group">
+      <label for="passengers">Koliko oseb gre?</label>
+      <input [(ngModel)]="search.passengers" type="number" class="form-control" id="passengers" name="passengers" min="0" />
+    </div>
+    <div class="form-group">
+      <label for="baggage">Koliko prtljage imaš?</label>
+      <input [(ngModel)]="search.baggage" type="number" class="form-control" id="baggage" name="baggage" min="0" />
+      <small class="form-text text-muted">
+        Za en kos prtljage se upošteva okvirna velikost kovčka v ročni prtljagi na letalu (okrog 55x45x25 cm).
+      </small>
+    </div>
+    <div class="alert alert-{{ error.type }}" *ngIf="error.type">
+      <p class="m-0">{{ error.message }}</p>
+    </div>
+    <div class="text-right">
+      <button type="submit" class="btn btn-primary">Išči</button>
+    </div>
+  </form>
+</div>

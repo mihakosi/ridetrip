@@ -1,0 +1,46 @@
+<div class="container my-3">
+  <div class="d-flex">
+    <h3 class="mb-0">Zgodovina prevozov</h3>
+  </div>
+</div>
+<div class="container my-3">
+  <ul class="nav nav-line mb-3">
+    <li class="nav-item">
+      <a class="nav-link active" routerLink="/history/reservations">Rezervacije</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/history/offers">Ponujeni prevozi</a>
+    </li>
+  </ul>
+  <ng-container *ngIf="reservations">
+    <ul class="list-group">
+      <a routerLink="/reservations/{{ reservation.id }}" class="list-group-item" *ngFor="let reservation of reservations">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p class="mb-1">
+              <strong>{{ reservation.routes[0].startSimple }}</strong> -
+              <strong>{{ reservation.routes[reservation.routes.length - 1].endSimple }}</strong>
+            </p>
+            <small class="text-secondary">{{ reservation.routes[0].departure | date: "d. M. yyyy, H:mm" }}</small>
+          </div>
+          <div class="col-auto">
+            <p class="mb-0">
+              <strong>{{ reservation.price | currency: "EUR" }}</strong>
+            </p>
+          </div>
+        </div>
+      </a>
+    </ul>
+    <div class="text-center text-secondary" *ngIf="reservations.length == 0">
+      <h1><i class="fas fa-car"></i></h1>
+      <p>Nimaš preteklih rezervacij.</p>
+    </div>
+  </ng-container>
+</div>
+<div *ngIf="!reservations && !error.type">
+  <div class="loader"></div>
+</div>
+<div class="text-center text-secondary" *ngIf="error.type">
+  <h1><i class="fas fa-car"></i></h1>
+  <p>{{ error.message }}</p>
+</div>

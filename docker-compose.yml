@@ -1,0 +1,37 @@
+version: "3"
+services:
+  api:
+    build: .
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/ridetrip
+      JWT_PASSWORD: 74r8ohufgw7y8o
+      NODE_ENV: development
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    networks:
+      - ridetrip
+    command: npm start
+  app:
+    build: ./app
+    ports:
+      - "4200:4200"
+    networks:
+      - ridetrip
+    command: ng serve --host 0.0.0.0
+  postgres:
+    build: ./db
+    image: postgres:12
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    networks:
+      - ridetrip
+networks:
+  ridetrip:
+    driver: bridge

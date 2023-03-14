@@ -1,0 +1,40 @@
+<div class="container my-3">
+  <div class="row justify-content-center">
+    <div class="col-md-9 col-lg-7 col-xl-6">
+      <h3 class="mb-3">Registracija</h3>
+      <form (ngSubmit)="signUp()" role="form">
+        <div class="form-group">
+          <label for="firstName">Ime</label>
+          <input [(ngModel)]="user.firstName" type="text" class="form-control" id="firstName" name="firstName" />
+        </div>
+        <div class="form-group">
+          <label for="lastName">Priimek</label>
+          <input [(ngModel)]="user.lastName" type="text" class="form-control" id="lastName" name="lastName" />
+        </div>
+        <div class="form-group">
+          <label for="email">Elektronska pošta</label>
+          <input [(ngModel)]="user.email" type="email" class="form-control" id="email" name="email" />
+        </div>
+        <div class="form-group">
+          <label for="phone">Telefonska številka</label>
+          <input [(ngModel)]="user.phone" type="text" class="form-control" id="phone" name="phone" />
+        </div>
+        <div class="form-group">
+          <label for="password">Geslo</label>
+          <input [(ngModel)]="user.password" type="password" class="form-control" id="password" name="password" />
+        </div>
+        <div class="form-group">
+          <small class="text-secondary">
+            RideTrip je prototip rešitve za deljenje prevoza v Sloveniji, izdelan v okviru diplomskega dela. Z registracijo se strinjaš s
+            tem, da boš RideTrip uporabljal/a izključno za namene sodelovanja v raziskavi, izvedeni v okviru diplomskega dela. Kakršnakoli
+            druga uporaba rešitve ni dovoljena.
+          </small>
+        </div>
+        <div class="alert alert-{{ error.type }}" *ngIf="error.type && error.type != 'data' && error.type != 'loading'">
+          <p class="m-0">{{ error.message }}</p>
+        </div>
+        <button type="submit" class="btn btn-primary w-100" [disabled]="error.type === 'loading'">Registracija</button>
+      </form>
+    </div>
+  </div>
+</div>

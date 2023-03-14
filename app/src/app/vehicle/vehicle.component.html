@@ -1,0 +1,51 @@
+<div class="container my-3">
+  <div class="d-flex">
+    <a routerLink="/vehicles" class="navbar-toggler p-0 mr-3">
+      <span class="back-icon"></span>
+    </a>
+    <h3 class="mb-0">Uredi vozilo</h3>
+  </div>
+</div>
+<div class="container my-3">
+  <ng-container *ngIf="vehicle">
+    <form (ngSubmit)="updateVehicle()" role="form">
+      <div class="form-group">
+        <label for="model">Znamka in model vozila</label>
+        <input [(ngModel)]="vehicle.model" type="text" class="form-control" id="model" name="model" />
+      </div>
+      <div class="form-group">
+        <label for="licencePlate">Registrska številka</label>
+        <input [(ngModel)]="vehicle.licencePlate" type="text" class="form-control" id="licencePlate" name="licencePlate" />
+      </div>
+      <div class="form-group">
+        <label for="passengers">Za koliko oseb je prostora v vozilu?</label>
+        <input [(ngModel)]="vehicle.passengers" type="number" class="form-control" id="passengers" name="passengers" min="0" />
+        <small class="form-text text-muted"
+          >Največje število oseb, ki se lahko pelje v vozilu. Vrednost je možno prilagoditi za posamezen prevoz.</small
+        >
+      </div>
+      <div class="form-group">
+        <label for="baggage">Za koliko prtljage je prostora v vozilu?</label>
+        <input [(ngModel)]="vehicle.baggage" type="number" class="form-control" id="baggage" name="baggage" min="0" />
+        <small class="form-text text-muted">
+          Za en kos prtljage se upošteva okvirna velikost kovčka v ročni prtljagi na letalu (okrog 55x45x25 cm). Vrednost je možno
+          prilagoditi za posamezen prevoz.
+        </small>
+      </div>
+      <div class="alert alert-{{ error.type }}" *ngIf="error.type && error.type != 'data' && error.type != 'loading'">
+        <p class="m-0">{{ error.message }}</p>
+      </div>
+      <div class="d-flex justify-content-end">
+        <button type="submit" class="btn btn-primary" [disabled]="error.type === 'loading'">Shrani</button>
+      </div>
+    </form>
+  </ng-container>
+</div>
+<div *ngIf="!vehicle && !error.type">
+  <div class="loader"></div>
+</div>
+<div class="text-center text-secondary py-3" *ngIf="error.type && error.type === 'data'">
+  <h1><i class="fas fa-car"></i></h1>
+  <p>{{ error.message }}</p>
+  <a routerLink="/vehicles">Nazaj na moja vozila</a>
+</div>

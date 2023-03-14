@@ -1,0 +1,16 @@
+<div id="map" class="map"></div>
+<div class="destination position-fixed">
+  <input type="text" class="form-control w-100" placeholder="Kam greš?" routerLink="/search" />
+</div>
+<div class="map-info position-fixed p-2" *ngIf="ride">
+  <div class="row align-items-start justify-content-between">
+    <div class="col-6">
+      <label class="small text-secondary">Razdalja do cilja</label>
+      <h5 class="m-0">{{ ride.distance / 1000 | number: "1.1-1" }} km</h5>
+    </div>
+    <div class="col-6">
+      <label class="small text-secondary">Predviden prihod</label>
+      <h5 class="m-0">{{ ride.estimatedArrival | date: "H:mm" }}</h5>
+    </div>
+  </div>
+</div>

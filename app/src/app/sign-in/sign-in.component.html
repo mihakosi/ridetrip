@@ -1,0 +1,21 @@
+<div class="container my-3">
+  <div class="row justify-content-center">
+    <div class="col-md-9 col-lg-7 col-xl-6">
+      <h3 class="mb-3">Prijava</h3>
+      <form (ngSubmit)="signIn()" role="form">
+        <div class="form-group">
+          <label for="email">Elektronska pošta</label>
+          <input [(ngModel)]="user.email" type="email" class="form-control" id="email" name="email" />
+        </div>
+        <div class="form-group">
+          <label for="password">Geslo</label>
+          <input [(ngModel)]="user.password" type="password" class="form-control" id="password" name="password" />
+        </div>
+        <div class="alert alert-{{ error.type }}" *ngIf="error.type && error.type != 'data' && error.type != 'loading'">
+          <p class="m-0">{{ error.message }}</p>
+        </div>
+        <button type="submit" class="btn btn-primary w-100" [disabled]="error.type === 'loading'">Prijava</button>
+      </form>
+    </div>
+  </div>
+</div>

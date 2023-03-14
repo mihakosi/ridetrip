@@ -1,0 +1,212 @@
+<ng-container *ngIf="offer">
+  <div class="container my-3">
+    <div class="d-flex">
+      <a routerLink="/offers" class="navbar-toggler p-0 mr-3">
+        <span class="back-icon"></span>
+      </a>
+      <div>
+        <h3>{{ offer.routes[0].startSimple }} - {{ offer.routes[offer.routes.length - 1].endSimple }}</h3>
+        <h6 class="mb-0">{{ offer.routes[0].departure | date: "d. M. yyyy, H:mm" }}</h6>
+      </div>
+    </div>
+  </div>
+</ng-container>
+<div id="map" class="map-small" *ngIf="error.type != 'data'"></div>
+<ng-container *ngIf="offer">
+  <div class="container my-3">
+    <ng-container *ngIf="offer.active && passengers">
+      <div class="row pt-2" *ngIf="passengers">
+        <ng-container *ngFor="let passenger of passengers">
+          <div class="col-md-6">
+            <div class="mb-1">
+              <img
+                src="{{ passenger.user.image ? passenger.user.image : '/assets/images/user.png' }}"
+                class="user-avatar rounded-circle mr-2"
+              />
+              {{ passenger.user.firstName }} {{ passenger.user.lastName }}
+            </div>
+            <div class="form-group text-center">
+              <label>S potnikom/potnico sem bil/a zadovoljen/zadovoljna.</label>
+              <div class="rating text-secondary">
+                <i class="far fa-frown mr-3" (click)="createRating(passenger.id, 1)"></i>
+                <i class="far fa-meh mr-3" (click)="createRating(passenger.id, 2)"></i>
+                <i class="far fa-smile" (click)="createRating(passenger.id, 3)"></i>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="!offer.active">
+      <div class="alert alert-warning">
+        <p class="m-0">Prevoz je preklican.</p>
+      </div>
+      <div class="form-group pb-2">
+        <small class="text-secondary">Razlog za preklic prevoza</small>
+        <p class="m-0">{{ offer.cancellationReason }}</p>
+      </div>
+    </ng-container>
+    <div class="row">
+      <div class="col-12">
+        <div class="form-group">
+          <small class="text-secondary">Vozilo</small>
+          <div class="row">
+            <div class="col-6 text-left">
+              {{ offer.vehicle.model }}
+            </div>
+            <div class="col-6 text-right">
+              <span class="badge badge-light registration-plate">{{ offer.vehicle.licencePlate }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <section class="pb-3">
+      <ng-container *ngFor="let route of offer.routes; first as isFirst">
+        <div class="row align-items-center">
+          <div class="col-auto">
+            <div [ngClass]="{ 'point-red': isFirst, point: !isFirst }"></div>
+          </div>
+          <div class="col pl-0">
+            {{ route.start }}
+          </div>
+        </div>
+        <div class="row align-items-center">
+          <div class="col-12">
+            <div class="route">
+              <div class="row pb-2">
+                <div class="col-6">
+                  <small class="text-secondary">Odhod</small>
+                  <p class="mb-0">{{ route.departure | date: "d. M. yyyy, H:mm" }}</p>
+                </div>
+                <div class="col-6">
+                  <small class="text-secondary">Skupni stroški prevoza</small>
+                  <p class="mb-0">{{ route.price | currency: "EUR" }}</p>
+                </div>
+              </div>
+              <div class="pb-2">
+                <div class="row">
+                  <div class="col-6">
+                    <div class="text-center">
+                      <p class="mb-1"><i class="fas fa-user"></i></p>
+                      <small class="text-secondary">Prosta mesta</small>
+                      <p class="mb-0">
+                        <strong>{{ route.passengersSpace }}</strong>
+                      </p>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="text-center">
+                      <p class="mb-1"><i class="fas fa-suitcase"></i></p>
+                      <small class="text-secondary">Prostor za prtljago</small>
+                      <p class="mb-0">
+                        <strong>{{ route.baggageSpace }}</strong>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <ul class="list-group" *ngIf="route.reservations.length > 0">
+                <li
+                  class="list-group-item"
+                  [ngClass]="{ 'text-secondary': !reservation.active }"
+                  *ngFor="let reservation of route.reservations"
+                >
+                  <div class="mb-1">
+                    <img
+                      src="{{ reservation.user.image ? reservation.user.image : '/assets/images/user.png' }}"
+                      class="user-avatar rounded-circle mr-2"
+                    />{{ reservation.user.firstName }} {{ reservation.user.lastName }}
+                    <i
+                      class="far fa-smile profile-icon"
+                      *ngIf="reservation.user.ratings.length > 0 && reservation.user.ratings[0].averageRating >= 2.5"
+                    ></i>
+                    <i
+                      class="far fa-meh profile-icon"
+                      *ngIf="
+                        reservation.user.ratings.length > 0 &&
+                        reservation.user.ratings[0].averageRating < 2.5 &&
+                        reservation.user.ratings[0].averageRating >= 1.5
+                      "
+                    ></i>
+                    <i
+                      class="far fa-frown profile-icon"
+                      *ngIf="reservation.user.ratings.length > 0 && reservation.user.ratings[0].averageRating < 1.5"
+                    ></i>
+                    <span class="text-secondary ml-3">{{ reservation.user.phone }}</span>
+                  </div>
+                  <div class="row">
+                    <div class="col-6"><i class="fas fa-user-friends mr-2"></i>{{ reservation.passengers }}</div>
+                    <div class="col-6"><i class="fas fa-suitcase mr-2"></i>{{ reservation.baggage }}</div>
+                  </div>
+                  <div class="mt-2" *ngIf="offer.active && reservation.active && allowReservationCancellation(route.departure)">
+                    <button class="btn btn-link p-0" (click)="cancelReservation(reservation)" [disabled]="error.type === 'loading'">
+                      Prekliči rezervacijo
+                    </button>
+                  </div>
+                  <div class="mt-2" *ngIf="!reservation.active">
+                    <small class="text-secondary">Razlog za preklic rezervacije</small>
+                    <p class="m-0">{{ reservation.cancellationReason }}</p>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+      <div class="row align-items-center">
+        <div class="col-auto">
+          <div class="point-green"></div>
+        </div>
+        <div class="col pl-0">
+          {{ offer.routes[offer.routes.length - 1].end }}
+        </div>
+      </div>
+    </section>
+    <div class="form-group">
+      <p>{{ offer.description }}</p>
+    </div>
+    <div class="text-right" *ngIf="offer.active && allowLocationSharing()">
+      <button class="btn btn-primary" (click)="shareLocation()" *ngIf="!sharingLocation">Deli lokacijo</button>
+      <button class="btn btn-danger" (click)="stopShareLocation()" *ngIf="sharingLocation">Prenehaj deliti lokacijo</button>
+    </div>
+    <div class="text-right" *ngIf="offer.active && allowOfferCancellation()">
+      <button class="btn btn-danger" data-toggle="modal" data-target="#cancelOffer">Prekliči prevoz</button>
+    </div>
+  </div>
+  <div class="modal fade modal-bottom" id="cancelOffer" tabindex="-1" role="dialog">
+    <div class="modal-dialog w-100" role="document">
+      <div class="modal-content">
+        <div class="container py-3">
+          <div class="form-group w-100">
+            <label for="cancellationReason">Zakaj odpoveduješ prevoz?</label>
+            <textarea
+              class="form-control"
+              id="cancellationReason"
+              [(ngModel)]="offer.cancellationReason"
+              name="cancellationReason"
+            ></textarea>
+            <small class="text-muted">Upravičeni razlogi za odpoved so na primer bolezen, nujen opravek in podobno.</small>
+          </div>
+          <div class="alert alert-{{ error.type }}" *ngIf="error.type && error.type != 'data' && error.type != 'loading'">
+            <p class="m-0">{{ error.message }}</p>
+          </div>
+          <div class="d-flex justify-content-between">
+            <button type="button" class="btn btn-link" id="dismissCancellation" data-dismiss="modal">Nazaj</button>
+            <button type="button" class="btn btn-danger" (click)="cancelOffer()" [disabled]="error.type === 'loading'">
+              Odpovej prevoz
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>
+<div *ngIf="!offer && !error.type">
+  <div class="loader"></div>
+</div>
+<div class="text-center text-secondary py-3" *ngIf="error.type && error.type === 'data'">
+  <h1><i class="fas fa-car"></i></h1>
+  <p>{{ error.message }}</p>
+  <a routerLink="/offers">Nazaj na ponujene prevoze</a>
+</div>

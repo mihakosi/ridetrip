@@ -1,0 +1,65 @@
+<nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light navbar-side">
+  <button class="navbar-toggler p-0" data-navigation="slide" data-target="#navigation" (click)="toggleNavigation($event)">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <a class="navbar-brand d-flex align-items-center" routerLink="/">
+    <img src="/assets/images/logo.svg" style="width: auto; height: 30px;" />
+  </a>
+  <div
+    class="navbar-overlay navbar-collapse"
+    data-navigation="slide"
+    data-target="#navigation"
+    id="navigation"
+    (click)="toggleNavigation($event)"
+  >
+    <ul class="navbar-nav ml-lg-auto">
+      <ng-container *ngIf="isSignedIn()">
+        <li class="header-item d-lg-none mb-2">
+          <div class="row align-items-center mb-3">
+            <div class="col-auto pr-0">
+              <img src="{{ getUser().image ? getUser().image : '/assets/images/user.png' }}" class="user-avatar-large rounded-circle" />
+            </div>
+            <div class="col text-ellipsis">
+              <p class="mb-1 text-ellipsis">{{ getUser().firstName }} {{ getUser().lastName }}</p>
+              <a class="nav-link py-0" (click)="signOut()">Odjava</a>
+            </div>
+          </div>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/">Poišči prevoz</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/reservations">Moji prevozi</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/recurring/rides">Ponavljajoči prevozi</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/history/reservations">Zgodovina prevozov</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/settings">Nastavitve</a>
+        </li>
+        <li class="nav-item d-none d-lg-block">
+          <a class="nav-link" (click)="signOut()">Odjava</a>
+        </li>
+      </ng-container>
+      <ng-container *ngIf="!isSignedIn()">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/signin">Prijava</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/signup">Registracija</a>
+        </li>
+      </ng-container>
+    </ul>
+  </div>
+</nav>
+<main class="main">
+  <div class="alert-fixed" *ngIf="error.message">
+    <div class="alert alert-{{ error.type }}">
+      <p class="mb-0">{{ error.message }}</p>
+    </div>
+  </div>
+  <router-outlet></router-outlet>
+</main>

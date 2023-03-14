@@ -1,0 +1,47 @@
+<div class="container my-3">
+  <div class="d-flex">
+    <a routerLink="/settings" class="navbar-toggler p-0 mr-3">
+      <span class="back-icon"></span>
+    </a>
+    <div>
+      <h3 class="mb-0">Ponavljajoči prevozi</h3>
+    </div>
+  </div>
+</div>
+<div class="container my-3">
+  <ul class="nav nav-line mb-3">
+    <li class="nav-item">
+      <a class="nav-link active" routerLink="/recurring/manage/rides">Iščem</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/recurring/manage/offers">Ponujam</a>
+    </li>
+  </ul>
+  <ng-container *ngIf="rides">
+    <ul class="list-group" *ngIf="rides.length > 0">
+      <a routerLink="/recurring/manage/rides/{{ ride.id }}" class="list-group-item" *ngFor="let ride of rides">
+        <div class="row align-items-center justify-content-between">
+          <div class="col">
+            <p class="mb-0">
+              <strong>{{ ride.startSimple }}</strong> - <strong>{{ ride.endSimple }}</strong>
+            </p>
+          </div>
+        </div>
+      </a>
+    </ul>
+    <div class="text-center text-secondary" *ngIf="rides.length == 0">
+      <h1><i class="fas fa-car"></i></h1>
+      <p>Nimaš ponavljajočih iskanih prevozov.</p>
+    </div>
+  </ng-container>
+  <a routerLink="/recurring/manage/rides/new" class="btn btn-floating btn-primary">
+    <span class="plus-icon"></span>
+  </a>
+</div>
+<div *ngIf="!rides && !error.type">
+  <div class="loader"></div>
+</div>
+<div class="text-center text-secondary" *ngIf="error.type">
+  <h1><i class="fas fa-car"></i></h1>
+  <p>{{ error.message }}</p>
+</div>

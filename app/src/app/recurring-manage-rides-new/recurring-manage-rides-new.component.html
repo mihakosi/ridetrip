@@ -1,0 +1,94 @@
+<div class="container my-3">
+  <div class="d-flex">
+    <a routerLink="/recurring/manage/rides" class="navbar-toggler p-0 mr-3">
+      <span class="back-icon"></span>
+    </a>
+    <div>
+      <h3 class="mb-0">Dodaj ponavljajoči prevoz</h3>
+    </div>
+  </div>
+</div>
+<div class="container my-3">
+  <form (ngSubmit)="createRecurringRide()" role="form">
+    <div class="form-group">
+      <label for="start">Od kod greš?</label>
+      <input
+        type="text"
+        class="form-control"
+        id="start"
+        [(ngModel)]="ride.start"
+        name="start"
+        data-type="start"
+        (focusout)="getSearch($event)"
+      />
+      <small *ngIf="startSearch.loading">Iskanje lokacije ...</small>
+      <small *ngIf="startSearch.message" class="text-danger">{{ startSearch.message }}</small>
+    </div>
+    <div class="form-group">
+      <label for="end">Kam greš?</label>
+      <input type="text" class="form-control" id="end" [(ngModel)]="ride.end" name="end" data-type="end" (focusout)="getSearch($event)" />
+      <small *ngIf="endSearch.loading">Iskanje lokacije ...</small>
+      <small *ngIf="endSearch.message" class="text-danger">{{ endSearch.message }}</small>
+    </div>
+    <div class="form-group">
+      <label for="hours">Kdaj greš?</label>
+      <div class="row">
+        <div class="col-auto">
+          <select class="form-control date-input mb-2 mr-2" id="hours" [(ngModel)]="ride.hours" name="hours">
+            <option *ngFor="let hour of hours" value="{{ hour }}">{{ hour }}</option>
+          </select>
+          <select class="form-control date-input mb-2 mr-2" id="minutes" [(ngModel)]="ride.minutes" name="minutes">
+            <option *ngFor="let minute of minutes" value="{{ minute }}">{{ minute }}</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <div class="custom-control custom-checkbox mb-2">
+          <input type="checkbox" class="custom-control-input" id="mondays" [(ngModel)]="ride.mondays" name="mondays" />
+          <label class="custom-control-label" for="mondays">Vsak ponedeljek</label>
+        </div>
+        <div class="custom-control custom-checkbox mb-2">
+          <input type="checkbox" class="custom-control-input" id="tuesdays" [(ngModel)]="ride.tuesdays" name="tuesdays" />
+          <label class="custom-control-label" for="tuesdays">Vsak torek</label>
+        </div>
+        <div class="custom-control custom-checkbox mb-2">
+          <input type="checkbox" class="custom-control-input" id="wednesdays" [(ngModel)]="ride.wednesdays" name="wednesdays" />
+          <label class="custom-control-label" for="wednesdays">Vsako sredo</label>
+        </div>
+        <div class="custom-control custom-checkbox mb-2">
+          <input type="checkbox" class="custom-control-input" id="thursdays" [(ngModel)]="ride.thursdays" name="thursdays" />
+          <label class="custom-control-label" for="thursdays">Vsak četrtek</label>
+        </div>
+        <div class="custom-control custom-checkbox mb-2">
+          <input type="checkbox" class="custom-control-input" id="fridays" [(ngModel)]="ride.fridays" name="fridays" />
+          <label class="custom-control-label" for="fridays">Vsak petek</label>
+        </div>
+        <div class="custom-control custom-checkbox mb-2">
+          <input type="checkbox" class="custom-control-input" id="saturdays" [(ngModel)]="ride.saturdays" name="saturdays" />
+          <label class="custom-control-label" for="saturdays">Vsako soboto</label>
+        </div>
+        <div class="custom-control custom-checkbox">
+          <input type="checkbox" class="custom-control-input" id="sundays" [(ngModel)]="ride.sundays" name="sundays" />
+          <label class="custom-control-label" for="sundays">Vsako nedeljo</label>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="passengers">Koliko oseb gre?</label>
+      <input type="number" class="form-control" id="passengers" min="0" [(ngModel)]="ride.passengers" name="passengers" />
+    </div>
+    <div class="form-group">
+      <label for="baggage">Koliko prtljage imaš?</label>
+      <input type="number" class="form-control" id="baggage" min="0" [(ngModel)]="ride.baggage" name="baggage" />
+      <small class="form-text text-muted">
+        Za en kos prtljage se upošteva okvirna velikost kovčka v ročni prtljagi na letalu (okrog 55x45x25 cm).
+      </small>
+    </div>
+    <div class="alert alert-{{ error.type }}" *ngIf="error.type && error.type != 'data' && error.type != 'loading'">
+      <p class="m-0">{{ error.message }}</p>
+    </div>
+    <div class="text-right">
+      <button type="submit" class="btn btn-primary" [disabled]="error.type === 'loading'">Dodaj</button>
+    </div>
+  </form>
+</div>
